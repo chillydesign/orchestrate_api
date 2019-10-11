@@ -2,14 +2,21 @@
 
 
 
-
-function get_projects(){
+function get_projects($opts = null){
     global $conn;
+
+    if($opts == null) {
+        $opts =  array('limit' => 10, 'offset' => 0);
+    };
+
 
     try {
         $query = "SELECT *  FROM projects
-        ORDER BY   projects.status ASC, projects.updated_at DESC";
+        ORDER BY projects.status ASC, projects.updated_at DESC
+        LIMIT :limit OFFSET :offset ";
         $projects_query = $conn->prepare($query);
+        $projects_query->bindParam(':limit', $opts['limit'], PDO::PARAM_INT);
+        $projects_query->bindParam(':offset', $opts['offset'], PDO::PARAM_INT);
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
         $projects_count = $projects_query->rowCount();
@@ -122,6 +129,28 @@ function update_project($project_id, $project) {
         return false;
     }
 
+}
+
+// change the updated_at date
+function touch_project($project_id) {
+    global $conn;
+    if ( $project_id > 0 ){
+        try {
+            $updated_at = updated_at_string();
+            $query = "UPDATE projects SET `updated_at` = :updated_at WHERE id = :id";
+            $project_query = $conn->prepare($query);
+            $project_query->bindParam(':updated_at', $updated_at);
+            $project_query->bindParam(':id', $project_id);
+            $project_query->execute();
+            unset($conn);
+            return true;
+        } catch(PDOException $err) {
+            return false;
+        };
+
+    } else { // project name was blank
+        return false;
+    }
 }
 
 
