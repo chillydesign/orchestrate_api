@@ -7,7 +7,7 @@ function get_tasks($project_id){
     if ($project_id !== null) {
         $query = "SELECT *  FROM tasks
         WHERE project_id = :project_id 
-        ORDER BY    tasks.ordering ASC, tasks.created_at ASC";
+        ORDER BY tasks.ordering ASC, tasks.created_at ASC";
     } else {
         $query = "SELECT *  FROM tasks ORDER BY  tasks.project_id ASC, tasks.created_at DESC";
     }
@@ -33,6 +33,44 @@ function get_tasks($project_id){
     } catch(PDOException $err) {
         return [];
     };
+}
+
+function get_random_incomplete_tasks($project_id, $limit) {
+    global $conn;
+
+    if ($project_id !== null) {
+        
+        $query = "SELECT *  FROM tasks
+        WHERE project_id = :project_id 
+        AND indentation = 0
+        AND completed = 0
+        ORDER BY RAND() ASC LIMIT :limit";
+ 
+        try {
+
+            $tasks_query = $conn->prepare($query);
+            $tasks_query->bindParam(':project_id', $project_id);
+            $tasks_query->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $tasks_query->setFetchMode(PDO::FETCH_OBJ);
+            $tasks_query->execute();
+            $tasks_count = $tasks_query->rowCount();
+
+            if ($tasks_count > 0) {
+                $tasks =  $tasks_query->fetchAll();
+                $tasks = processTasks($tasks);
+            } else {
+                $tasks =  [];
+            }
+
+            unset($conn);
+            return $tasks;
+
+        } catch(PDOException $err) {
+            return [];
+        };
+
+    }
+    
 }
 
 
