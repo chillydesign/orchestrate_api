@@ -15,8 +15,8 @@ function get_projects($opts = null){
         ORDER BY projects.status ASC, projects.updated_at DESC
         LIMIT :limit OFFSET :offset ";
         $projects_query = $conn->prepare($query);
-        $projects_query->bindParam(':limit', $opts['limit'], PDO::PARAM_INT);
-        $projects_query->bindParam(':offset', $opts['offset'], PDO::PARAM_INT);
+        $projects_query->bindParam(':limit', intval($opts['limit']), PDO::PARAM_INT);
+        $projects_query->bindParam(':offset', intval($opts['offset']), PDO::PARAM_INT);
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
         $projects_count = $projects_query->rowCount();
