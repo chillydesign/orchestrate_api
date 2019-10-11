@@ -13,6 +13,10 @@ if (!empty($data->attributes)) {
 
     if ($updated) {
         $task = get_task($id);
+        if ($task) {
+            // change the updated+at date
+            touch_project($task->project_id);
+        }
         http_response_code(200);
         echo json_encode($task);
     } else {

@@ -8,9 +8,12 @@ $projects = get_projects( array('limit' => $limit, 'offset' => $offset)  );
 
 
 foreach($projects as $project) {
-    $project->tasks_count =    tasks_count($project->id);    
-    if ($project->tasks_count->incomplete > 0) {
-        $project->random_tasks =  get_random_incomplete_tasks($project->id, 3);
+    $project->tasks_count =  tasks_count($project->id);   
+    // if project is active and has incomplete tasks, give it some random tasks to show 
+    if ($project->status == 'active') {
+        if ($project->tasks_count->incomplete > 0 ) {
+            $project->random_tasks =  get_random_incomplete_tasks($project->id, 3);
+        }
     }
 }
     
