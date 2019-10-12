@@ -152,11 +152,13 @@ function update_task($task_id, $task) {
             `completed` = :completed, 
             `indentation` = :indentation, 
             `ordering` = :ordering, 
+            `priority` = :priority, 
             `updated_at` = :updated_at 
             WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':content', $task->content);
             $task_query->bindParam(':indentation',  $task->indentation);
+            $task_query->bindParam(':priority',  $task->priority);
             $task_query->bindParam(':ordering',  $task->ordering);
             $task_query->bindParam(':completed', $completed  );
             $task_query->bindParam(':updated_at', $updated_at);
