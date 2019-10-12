@@ -160,7 +160,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':indentation',  $task->indentation);
             $task_query->bindParam(':priority',  $task->priority);
             $task_query->bindParam(':ordering',  $task->ordering);
-            $task_query->bindParam(':completed', $completed  );
+            $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
             $task_query->bindParam(':id', $task_id);
             $task_query->execute();
@@ -210,6 +210,7 @@ function processTask($task) {
     $task->completed =  ($task->completed == '1' || $task->completed == 1) ;
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
+    $task->priority =  intval($task->priority);
     return $task;
 }
 
