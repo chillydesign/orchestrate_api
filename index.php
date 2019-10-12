@@ -7,9 +7,6 @@ header("Access-Control-Allow-Methods: *");
 header('Content-Type: application/json;charset=UTF-8');
 
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 
 include('connect.php');
 include('functions.php');
@@ -57,8 +54,32 @@ if ( isset($_GET['route'])  ) {
 
 
 
+    if ($route == 'uploads') {
+        if (isset($_GET['id'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                include('routes/uploads/delete.php');
+            } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+                 include('routes/uploads/update.php');
+            } else {
+                include('routes/uploads/show.php');
+            }
+        } else 
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                include('routes/uploads/create.php');
+            } else {
+                include('routes/uploads/index.php');
+            }
+        
+    } // end of if route is tasks
+
+
+
+
 } else {
    //  error
+   http_response_code(404);
+   echo json_encode('error'); 
+
 }
 
 
