@@ -15,6 +15,10 @@ define("DB_USER",  getenv('DB_USER') );
 define("DB_PASSWORD",  getenv('DB_PASSWORD') );
 
 
+define("UPLOADDIR",  '/public/uploads/' );
+define("FILELOC", dirname(__FILE__) );
+
+
 try {
 
     $conn = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME ,  DB_USER , DB_PASSWORD );

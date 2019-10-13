@@ -1,6 +1,9 @@
 <?php
 
 
+        // http://webeasystep.com/blog/view_article/How_to_upload_base64_file_in_PHP
+
+
 $json = file_get_contents('php://input');
 // Converts it into a PHP object
 $data = json_decode($json);
@@ -8,18 +11,21 @@ $data = json_decode($json);
 if (!empty($data->attributes)) {
 
 
-    $task_attributes = $data->attributes;
-    $task_id = create_task($task_attributes);
+    $upload_attributes = $data->attributes;
+    $upload_id = create_upload($upload_attributes);
 
-    if ($task_id) {
+   
+
+    if ($upload_id) {
         
-        $task = get_task($task_id);
-        if ($task) {
+        $upload = get_upload($upload_id);
+        if ($upload) {
             // change the updated+at date
-            touch_project($task->project_id);
+            touch_project($upload->project_id);
         }
+        
         http_response_code(201);
-        echo json_encode($task);
+        echo json_encode($upload);
     } else {
         http_response_code(404);
         echo json_encode( 'Error' );
@@ -31,4 +37,7 @@ if (!empty($data->attributes)) {
     http_response_code(404);
     echo json_encode( 'Error'  );
 }
+
+
+
 ?>
