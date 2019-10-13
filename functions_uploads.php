@@ -96,7 +96,7 @@ function create_upload($upload) {
 
 
             $target_dir = FILELOC . UPLOADDIR; // add the specific path to save the file
-            mkdir($target_dir . '/' . $upload_id , 0700);
+            mkdir($target_dir . '/' . $upload_id , 0777);
             
             $file_dir = $target_dir . $upload_id . '/' .  $upload->filename ;
             file_put_contents($file_dir, $decoded_file); // save
