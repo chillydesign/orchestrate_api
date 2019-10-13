@@ -13,25 +13,25 @@ include('functions.php');
 // };
 
 
-$add_uploads_table = "CREATE TABLE `orchestrate_api`.`uploads` ( `id` INT(11) NOT NULL AUTO_INCREMENT , `filename` TEXT NOT NULL , `extension` VARCHAR(255) NOT NULL , `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `project_id` INT(11) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;";
-if (klxc_add_migration($add_uploads_table)) {
-    echo 'added add_uploads_table';
-} else {
-    echo 'error add_uploads_table';
-};
+// $add_uploads_table = "CREATE TABLE `orchestrate_api`.`uploads` ( `id` INT(11) NOT NULL AUTO_INCREMENT , `filename` TEXT NOT NULL , `extension` VARCHAR(255) NOT NULL , `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `project_id` INT(11) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;";
+// if (klxc_add_migration($add_uploads_table)) {
+//     echo 'added add_uploads_table';
+// } else {
+//     echo 'error add_uploads_table';
+// };
 
-function klxc_add_migration($query) {
-    global $conn;
-        try {
-            $migration_query = $conn->prepare($query);
-            $migration_query->execute();
-            unset($conn);
-            return true;
+// function klxc_add_migration($query) {
+//     global $conn;
+//         try {
+//             $migration_query = $conn->prepare($query);
+//             $migration_query->execute();
+//             unset($conn);
+//             return true;
 
-        } catch(PDOException $err) {
-            return false;
+//         } catch(PDOException $err) {
+//             return false;
 
-        };
-}
+//         };
+// }
 
 ?>
