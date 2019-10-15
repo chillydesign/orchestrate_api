@@ -207,6 +207,8 @@ function mime2ext($mime){
 function processUpload($upload) {
     // if database is set as 1 it should return as true
     $upload->url = UPLOADDIR . $upload->id . '/'. $upload->filename;
+    $upload->project_id =  intval($upload->project_id);
+    $upload->id =  intval($upload->id);
     return $upload;
 }
 

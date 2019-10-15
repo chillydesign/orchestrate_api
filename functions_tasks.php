@@ -211,6 +211,8 @@ function processTask($task) {
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
     $task->priority =  intval($task->priority);
+    $task->id =  intval($task->id);
+    $task->project_id =  intval($task->project_id);
     return $task;
 }
 
