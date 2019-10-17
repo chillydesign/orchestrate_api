@@ -111,10 +111,13 @@ function create_task($task) {
     if ( !empty($task->project_id)  && !empty($task->content)  ){
 
         try {
-            $query = "INSERT INTO tasks (project_id, content) VALUES (:project_id, :content)";
+            $query = "INSERT INTO tasks
+             (project_id, content, ordering) VALUES 
+             (:project_id, :content, :ordering)";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':project_id', $task->project_id);
             $task_query->bindParam(':content', $task->content);
+            $task_query->bindParam(':ordering', $task->ordering);
             $task_query->execute();
             $task_id = $conn->lastInsertId();
             unset($conn);
