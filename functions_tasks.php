@@ -110,6 +110,10 @@ function create_task($task) {
     global $conn;
     if ( !empty($task->project_id)  && !empty($task->content)  ){
 
+        if ($task->ordering == null) {
+            $task->ordering = 9999;
+        }
+
         try {
             $query = "INSERT INTO tasks
              (project_id, content, ordering) VALUES 

@@ -6,17 +6,19 @@ function get_projects($opts = null){
     global $conn;
 
     if($opts == null) {
-        $opts =  array('limit' => 10, 'offset' => 0);
+        $opts =  array('limit' => 10, 'offset' => 0, 'status' => 'active');
     };
 
 
     try {
         $query = "SELECT *  FROM projects
+        WHERE status = :status
         ORDER BY projects.status ASC, projects.updated_at DESC
         LIMIT :limit OFFSET :offset ";
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', intval($opts['limit']), PDO::PARAM_INT);
         $projects_query->bindParam(':offset', intval($opts['offset']), PDO::PARAM_INT);
+        $projects_query->bindParam(':status', $opts['status']);
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
         $projects_count = $projects_query->rowCount();

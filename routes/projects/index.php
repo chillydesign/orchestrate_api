@@ -3,8 +3,9 @@
 
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
+$status = isset($_GET['status']) ? $_GET['status'] : 'active';
 
-$projects = get_projects( array('limit' => $limit, 'offset' => $offset)  );
+$projects = get_projects( array('limit' => $limit, 'offset' => $offset, 'status' => $status)  );
 
 
 foreach($projects as $project) {
