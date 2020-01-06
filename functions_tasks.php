@@ -116,11 +116,12 @@ function create_task($task) {
 
         try {
             $query = "INSERT INTO tasks
-             (project_id, content, ordering) VALUES 
-             (:project_id, :content, :ordering)";
+             (project_id, content, translation, ordering) VALUES 
+             (:project_id, :content, :translation, :ordering)";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':project_id', $task->project_id);
             $task_query->bindParam(':content', $task->content);
+            $task_query->bindParam(':translation', $task->translation);
             $task_query->bindParam(':ordering', $task->ordering);
             $task_query->execute();
             $task_id = $conn->lastInsertId();
@@ -156,6 +157,7 @@ function update_task($task_id, $task) {
             $updated_at =   updated_at_string();
             $query = "UPDATE tasks SET 
             `content` = :content, 
+            `translation` = :translation, 
             `completed` = :completed, 
             `indentation` = :indentation, 
             `ordering` = :ordering, 
@@ -164,6 +166,7 @@ function update_task($task_id, $task) {
             WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':content', $task->content);
+            $task_query->bindParam(':translation', $task->translation);
             $task_query->bindParam(':indentation',  $task->indentation);
             $task_query->bindParam(':priority',  $task->priority);
             $task_query->bindParam(':ordering',  $task->ordering);
