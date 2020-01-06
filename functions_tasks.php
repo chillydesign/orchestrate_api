@@ -113,7 +113,8 @@ function create_task($task) {
         if ($task->ordering == null) {
             $task->ordering = 9999;
         }
-        if ($task->translation == null) {
+        
+        if ( property_exists($task, 'translation') == false) {
             $task->translation = '';
         }
 
