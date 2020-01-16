@@ -8,8 +8,10 @@ $id = $_GET['id'];
 $project = get_project($id);
 if ($project) {
     $tasks = get_tasks($id);
+    $uploads = get_uploads($id);
 
     $project->tasks = $tasks;
+    $project->uploads = $uploads;
 
     echo json_encode($project);
     

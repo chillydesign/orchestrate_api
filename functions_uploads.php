@@ -118,6 +118,37 @@ function create_upload($upload) {
 
 
 
+function update_upload($upload_id, $upload) {
+    global $conn;
+    if ( $upload_id > 0 ){
+        try {
+
+
+            $updated_at =   updated_at_string();
+            $query = "UPDATE uploads SET 
+            `task_id` = :task_id, 
+            `updated_at` = :updated_at 
+            WHERE id = :id";
+            $upload_query = $conn->prepare($query);
+            $upload_query->bindParam(':task_id', $upload->task_id);
+            $upload_query->bindParam(':updated_at', $updated_at);
+            $upload_query->bindParam(':id', $upload_id);
+            $upload_query->execute();
+            unset($conn);
+            return true;
+
+        } catch(PDOException $err) {
+            return false;
+
+        };
+
+    } else { // upload name was blank
+        return false;
+    }
+
+}
+
+
 function delete_upload($upload_id) {
 
     // TODO NEED TO ACTUALLY REMOVE THE FILE FROM THE SERVER
@@ -208,6 +239,7 @@ function processUpload($upload) {
     // if database is set as 1 it should return as true
     $upload->url = UPLOADDIR . $upload->id . '/'. $upload->filename;
     $upload->project_id =  intval($upload->project_id);
+    $upload->task_id =  intval($upload->task_id);
     $upload->id =  intval($upload->id);
     return $upload;
 }
