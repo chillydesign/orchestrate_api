@@ -85,9 +85,10 @@ function create_upload($upload) {
             $extension = mime2ext($mime_type); // extract extension from mime type
 
 
-            $query = "INSERT INTO uploads (project_id, filename, extension) VALUES (:project_id, :filename, :extension)";
+            $query = "INSERT INTO uploads (project_id, task_id, filename, extension) VALUES (:project_id, :task_id, :filename, :extension)";
             $upload_query = $conn->prepare($query);
             $upload_query->bindParam(':project_id', $upload->project_id);
+            $upload_query->bindParam(':task_id', $upload->task_id);
             $upload_query->bindParam(':filename', $upload->filename);
             $upload_query->bindParam(':extension', $extension);
             $upload_query->execute();
