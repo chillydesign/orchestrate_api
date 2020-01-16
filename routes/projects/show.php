@@ -12,6 +12,7 @@ if ($project) {
 
     $project->tasks = $tasks;
     $project->uploads = $uploads;
+    $project->id = intval($project->id);
 
     echo json_encode($project);
     
