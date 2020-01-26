@@ -1,7 +1,7 @@
 <?php
 
 
-$limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+$limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
 
