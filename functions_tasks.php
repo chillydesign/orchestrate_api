@@ -156,6 +156,11 @@ function update_task($task_id, $task) {
             $completed = 0;
             if ($task->completed == true) {
                 $completed = 1;
+               if ($task->completed_at == null) {
+                   $task->completed_at = updated_at_string();
+               }
+            } else {
+                $task->completed_at = null;
             }
 
             $updated_at =   updated_at_string();
@@ -166,7 +171,8 @@ function update_task($task_id, $task) {
             `indentation` = :indentation, 
             `ordering` = :ordering, 
             `priority` = :priority, 
-            `updated_at` = :updated_at 
+            `updated_at` = :updated_at,
+            `completed_at` = :completed_at 
             WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':content', $task->content);
@@ -176,6 +182,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':ordering',  $task->ordering);
             $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
+            $task_query->bindParam(':completed_at', $task->completed_at);
             $task_query->bindParam(':id', $task_id);
             $task_query->execute();
             unset($conn);
