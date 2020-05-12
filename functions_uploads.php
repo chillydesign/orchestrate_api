@@ -81,6 +81,8 @@ function create_upload($upload) {
             $decoded_file = base64_decode($filedata[1]); // remove the mimetype from the base 64 string
 
 
+            $filename = urlencode($upload->filename);
+
             $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
             $extension = mime2ext($mime_type); // extract extension from mime type
 
@@ -89,7 +91,7 @@ function create_upload($upload) {
             $upload_query = $conn->prepare($query);
             $upload_query->bindParam(':project_id', $upload->project_id);
             $upload_query->bindParam(':task_id', $upload->task_id);
-            $upload_query->bindParam(':filename', $upload->filename);
+            $upload_query->bindParam(':filename', $filename);
             $upload_query->bindParam(':extension', $extension);
             $upload_query->execute();
             $upload_id = $conn->lastInsertId();
@@ -99,7 +101,7 @@ function create_upload($upload) {
             $target_dir = FILELOC . UPLOADDIR; // add the specific path to save the file
             mkdir($target_dir . '/' . $upload_id , 0777);
             
-            $file_dir = $target_dir . $upload_id . '/' .  $upload->filename ;
+            $file_dir = $target_dir . $upload_id . '/' .  $filename ;
             file_put_contents($file_dir, $decoded_file); // save
 
 
@@ -107,7 +109,7 @@ function create_upload($upload) {
 
         } catch(PDOException $err) {
 
-            echo json_encode($e->getMessage());
+            echo json_encode($err->getMessage());
 
         };
 
@@ -254,6 +256,3 @@ function processUploads($uploads) {
 
     return $uploads;
 }
-
-
-?>
