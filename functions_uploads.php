@@ -1,7 +1,8 @@
 <?php
 
 
-function get_uploads($project_id){
+function get_uploads($project_id)
+{
     global $conn;
 
     if ($project_id !== null) {
@@ -9,7 +10,7 @@ function get_uploads($project_id){
         $query = "SELECT *  FROM uploads
         WHERE project_id = :project_id 
         ORDER BY  uploads.created_at ASC";
-    
+
         try {
 
             $uploads_query = $conn->prepare($query);
@@ -27,17 +28,17 @@ function get_uploads($project_id){
 
             unset($conn);
             return $uploads;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return [];
         };
     }
 }
 
 
-function get_upload($upload_id = null) {
+function get_upload($upload_id = null)
+{
     global $conn;
-    if ( $upload_id != null) {
+    if ($upload_id != null) {
 
         try {
             $query = "SELECT * FROM uploads WHERE uploads.id = :id LIMIT 1";
@@ -56,7 +57,7 @@ function get_upload($upload_id = null) {
             }
             unset($conn);
             return $upload;
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return null;
         };
     } else { // if upload id is not greated than 0
@@ -67,21 +68,22 @@ function get_upload($upload_id = null) {
 
 
 
-function create_upload($upload) {
+function create_upload($upload)
+{
     global $conn;
-    if ( !empty($upload->project_id)  && !empty($upload->file_contents)  ){
+    if (!empty($upload->project_id)  && !empty($upload->file_contents)) {
 
 
-      
+
         try {
 
-       
+
             $file_contents = $upload->file_contents;
             $filedata = explode(',', $file_contents);
             $decoded_file = base64_decode($filedata[1]); // remove the mimetype from the base 64 string
 
 
-            $filename = urlencode($upload->filename);
+            $filename =  preg_replace('/[^a-z0-9]+/', '-', strtolower($upload->filename));
 
             $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
             $extension = mime2ext($mime_type); // extract extension from mime type
@@ -99,20 +101,17 @@ function create_upload($upload) {
 
 
             $target_dir = FILELOC . UPLOADDIR; // add the specific path to save the file
-            mkdir($target_dir . '/' . $upload_id , 0777);
-            
-            $file_dir = $target_dir . $upload_id . '/' .  $filename ;
+            mkdir($target_dir . '/' . $upload_id, 0777);
+
+            $file_dir = $target_dir . $upload_id . '/' .  $filename;
             file_put_contents($file_dir, $decoded_file); // save
 
 
             return ($upload_id);
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
 
             echo json_encode($err->getMessage());
-
         };
-
     } else { // upload project_id was blank
         return false;
     }
@@ -121,9 +120,10 @@ function create_upload($upload) {
 
 
 
-function update_upload($upload_id, $upload) {
+function update_upload($upload_id, $upload)
+{
     global $conn;
-    if ( $upload_id > 0 ){
+    if ($upload_id > 0) {
         try {
 
 
@@ -139,20 +139,17 @@ function update_upload($upload_id, $upload) {
             $upload_query->execute();
             unset($conn);
             return true;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return false;
-
         };
-
     } else { // upload name was blank
         return false;
     }
-
 }
 
 
-function delete_upload($upload_id) {
+function delete_upload($upload_id)
+{
 
     // TODO NEED TO ACTUALLY REMOVE THE FILE FROM THE SERVER
 
@@ -167,14 +164,12 @@ function delete_upload($upload_id) {
             $upload_query->execute();
             unset($conn);
             return true;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return false;
         };
     } else {
         return false;
     }
-
 }
 
 
@@ -184,7 +179,8 @@ function delete_upload($upload_id) {
 /*
 to take mime type as a parameter and return the equivalent extension
 */
-function mime2ext($mime){
+function mime2ext($mime)
+{
     $all_mimes = '{"png":["image\/png","image\/x-png"],"bmp":["image\/bmp","image\/x-bmp",
     "image\/x-bitmap","image\/x-xbitmap","image\/x-win-bitmap","image\/x-windows-bmp",
     "image\/ms-bmp","image\/x-ms-bmp","application\/bmp","application\/x-bmp",
@@ -230,17 +226,18 @@ function mime2ext($mime){
     "eml":["message\/rfc822"],"pem":["application\/x-x509-user-cert","application\/x-pem-file"],
     "p10":["application\/x-pkcs10","application\/pkcs10"],"p12":["application\/x-pkcs12"],
     "p7a":["application\/x-pkcs7-signature"],"p7c":["application\/pkcs7-mime","application\/x-pkcs7-mime"],"p7r":["application\/x-pkcs7-certreqresp"],"p7s":["application\/pkcs7-signature"],"crt":["application\/x-x509-ca-cert","application\/pkix-cert"],"crl":["application\/pkix-crl","application\/pkcs-crl"],"pgp":["application\/pgp"],"gpg":["application\/gpg-keys"],"rsa":["application\/x-pkcs7"],"ics":["text\/calendar"],"zsh":["text\/x-scriptzsh"],"cdr":["application\/cdr","application\/coreldraw","application\/x-cdr","application\/x-coreldraw","image\/cdr","image\/x-cdr","zz-application\/zz-winassoc-cdr"],"wma":["audio\/x-ms-wma"],"vcf":["text\/x-vcard"],"srt":["text\/srt"],"vtt":["text\/vtt"],"ico":["image\/x-icon","image\/x-ico","image\/vnd.microsoft.icon"],"csv":["text\/x-comma-separated-values","text\/comma-separated-values","application\/vnd.msexcel"],"json":["application\/json","text\/json"]}';
-    $all_mimes = json_decode($all_mimes,true);
+    $all_mimes = json_decode($all_mimes, true);
     foreach ($all_mimes as $key => $value) {
-        if(array_search($mime,$value) !== false) return $key;
+        if (array_search($mime, $value) !== false) return $key;
     }
     return false;
 }
 
 
-function processUpload($upload) {
+function processUpload($upload)
+{
     // if database is set as 1 it should return as true
-    $upload->url = UPLOADDIR . $upload->id . '/'. $upload->filename;
+    $upload->url = UPLOADDIR . $upload->id . '/' . $upload->filename;
     $upload->project_id =  intval($upload->project_id);
     $upload->task_id =  intval($upload->task_id);
     $upload->id =  intval($upload->id);
@@ -248,8 +245,9 @@ function processUpload($upload) {
 }
 
 
-function processUploads($uploads) {
-    
+function processUploads($uploads)
+{
+
     foreach ($uploads as $upload) {
         processUpload($upload);
     }
