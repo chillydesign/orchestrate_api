@@ -70,9 +70,27 @@ if ( isset($_GET['route'])  ) {
                 include('routes/uploads/index.php');
             }
         
-    } // end of if route is tasks
+    } // end of if route is uploads
 
 
+
+    if ($route == 'comments') {
+        if (isset($_GET['id'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                include('routes/comments/delete.php');
+            } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+                 include('routes/comments/update.php');
+            } else {
+                include('routes/comments/show.php');
+            }
+        } else 
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                include('routes/comments/create.php');
+            } else {
+                include('routes/comments/index.php');
+            }
+        
+    } // end of if route is comments
 
 
 } else {
@@ -81,9 +99,3 @@ if ( isset($_GET['route'])  ) {
    echo json_encode('error'); 
 
 }
-
-
-
-
-
-?>
