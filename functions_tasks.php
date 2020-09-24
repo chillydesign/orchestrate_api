@@ -116,11 +116,12 @@ function create_task($task) {
 
         try {
             $query = "INSERT INTO tasks
-             (project_id, content, translation, ordering) VALUES 
-             (:project_id, :content, :translation, :ordering)";
+             (project_id, content, time_taken, translation, ordering) VALUES 
+             (:project_id, :content,  :time_taken, :translation, :ordering)";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':project_id', $task->project_id);
             $task_query->bindParam(':content', $task->content);
+            $task_query->bindParam(':time_taken', $task->time_taken);
             $task_query->bindParam(':translation', $task->translation);
             $task_query->bindParam(':ordering', $task->ordering);
             $task_query->execute();
@@ -192,7 +193,8 @@ function update_task($task_id, $task) {
             `ordering` = :ordering, 
             `priority` = :priority, 
             `updated_at` = :updated_at,
-            `completed_at` = :completed_at 
+            `completed_at` = :completed_at ,
+            `time_taken` = :time_taken 
             WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':content', $task->content);
@@ -203,6 +205,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
             $task_query->bindParam(':completed_at', $task->completed_at);
+            $task_query->bindParam(':time_taken', $task->time_taken);
             $task_query->bindParam(':id', $task_id);
             $task_query->execute();
             unset($conn);
@@ -246,6 +249,7 @@ function processTask($task) {
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
     $task->priority =  intval($task->priority);
+    $task->time_taken =  intval($task->time_taken);
     $task->id =  intval($task->id);
     $task->project_id =  intval($task->project_id);
     return $task;
