@@ -20,6 +20,7 @@ if (!empty($data->attributes)) {
         $comment = get_comment($comment_id);
         if ($comment) {
             // do somethign to parent task
+            update_task_comment_count($comment->task_id);
         }
 
         http_response_code(201);

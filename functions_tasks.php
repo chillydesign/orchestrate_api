@@ -1,7 +1,7 @@
 <?php
 
 
-function get_tasks($project_id){
+function get_tasks($project_id) {
     global $conn;
 
     if ($project_id !== null) {
@@ -29,8 +29,7 @@ function get_tasks($project_id){
 
         unset($conn);
         return $tasks;
-
-    } catch(PDOException $err) {
+    } catch (PDOException $err) {
         return [];
     };
 }
@@ -39,13 +38,13 @@ function get_random_incomplete_tasks($project_id, $limit) {
     global $conn;
 
     if ($project_id !== null) {
-        
+
         $query = "SELECT *  FROM tasks
         WHERE project_id = :project_id 
         AND indentation = 0
         AND completed = 0
         ORDER BY RAND() ASC LIMIT :limit";
- 
+
         try {
 
             $tasks_query = $conn->prepare($query);
@@ -64,20 +63,17 @@ function get_random_incomplete_tasks($project_id, $limit) {
 
             unset($conn);
             return $tasks;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return [];
         };
-
     }
-    
 }
 
 
 
 function get_task($task_id = null) {
     global $conn;
-    if ( $task_id != null) {
+    if ($task_id != null) {
 
         try {
             $query = "SELECT * FROM tasks WHERE tasks.id = :id LIMIT 1";
@@ -96,7 +92,7 @@ function get_task($task_id = null) {
             }
             unset($conn);
             return $task;
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return null;
         };
     } else { // if task id is not greated than 0
@@ -108,13 +104,13 @@ function get_task($task_id = null) {
 
 function create_task($task) {
     global $conn;
-    if ( !empty($task->project_id)  && !empty($task->content)  ){
+    if (!empty($task->project_id)  && !empty($task->content)) {
 
         if ($task->ordering == null) {
             $task->ordering = 9999;
         }
-        
-        if ( property_exists($task, 'translation') == false) {
+
+        if (property_exists($task, 'translation') == false) {
             $task->translation = '';
         }
 
@@ -131,34 +127,58 @@ function create_task($task) {
             $task_id = $conn->lastInsertId();
             unset($conn);
             return ($task_id);
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
 
             return false;
-
         };
-
     } else { // task project_id was blank
         return false;
     }
-
-
 }
 
+
+
+function update_task_comment_count($task_id) {
+
+
+    global $conn;
+    if ($task_id > 0) {
+        // try {
+        $comments_count = task_comment_count($task_id);
+        $updated_at =   updated_at_string();
+
+        $query = "UPDATE tasks SET 
+                `comments_count` = :comments_count, 
+                `updated_at` = :updated_at
+                WHERE id = :id";
+        $task_query = $conn->prepare($query);
+        $task_query->bindParam(':comments_count', $comments_count);
+        $task_query->bindParam(':updated_at', $updated_at);
+        $task_query->bindParam(':id', $task_id);
+        $task_query->execute();
+        unset($conn);
+        return true;
+        // } catch (PDOException $err) {
+        return false;
+        // };
+    } else { // task id was less than 0
+        return false;
+    }
+}
 
 
 
 function update_task($task_id, $task) {
     global $conn;
-    if ( $task_id > 0 ){
+    if ($task_id > 0) {
         try {
 
             $completed = 0;
             if ($task->completed == true) {
                 $completed = 1;
-               if ($task->completed_at == null) {
-                   $task->completed_at = updated_at_string();
-               }
+                if ($task->completed_at == null) {
+                    $task->completed_at = updated_at_string();
+                }
             } else {
                 $task->completed_at = null;
             }
@@ -187,16 +207,12 @@ function update_task($task_id, $task) {
             $task_query->execute();
             unset($conn);
             return true;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return false;
-
         };
-
     } else { // task name was blank
         return false;
     }
-
 }
 
 
@@ -215,20 +231,18 @@ function delete_task($task_id) {
             $task_query->execute();
             unset($conn);
             return true;
-
-        } catch(PDOException $err) {
+        } catch (PDOException $err) {
             return false;
         };
     } else {
         return false;
     }
-
 }
 
 
 function processTask($task) {
     // if database is set as 1 it should return as true
-    $task->completed =  ($task->completed == '1' || $task->completed == 1) ;
+    $task->completed =  ($task->completed == '1' || $task->completed == 1);
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
     $task->priority =  intval($task->priority);
@@ -239,12 +253,10 @@ function processTask($task) {
 
 
 function processTasks($tasks) {
-    
+
     foreach ($tasks as $task) {
-       processTask($task);
+        processTask($task);
     }
 
     return $tasks;
 }
-
-?>
