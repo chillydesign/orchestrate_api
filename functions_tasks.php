@@ -116,12 +116,11 @@ function create_task($task) {
 
         try {
             $query = "INSERT INTO tasks
-             (project_id, content, time_taken, translation, ordering) VALUES 
-             (:project_id, :content,  :time_taken, :translation, :ordering)";
+             (project_id, content, translation, ordering) VALUES 
+             (:project_id, :content, :translation, :ordering)";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':project_id', $task->project_id);
             $task_query->bindParam(':content', $task->content);
-            $task_query->bindParam(':time_taken', $task->time_taken);
             $task_query->bindParam(':translation', $task->translation);
             $task_query->bindParam(':ordering', $task->ordering);
             $task_query->execute();
