@@ -2,8 +2,7 @@
 
 
 
-function get_projects($opts = null)
-{
+function get_projects($opts = null) {
     global $conn;
 
     if ($opts == null) {
@@ -42,8 +41,7 @@ function get_projects($opts = null)
 
 
 
-function get_project($project_id = null)
-{
+function get_project($project_id = null) {
 
     global $conn;
     if ($project_id != null) {
@@ -77,8 +75,7 @@ function get_project($project_id = null)
 
 
 
-function create_project($project)
-{
+function create_project($project) {
     global $conn;
     if (!empty($project->name)) {
 
@@ -104,8 +101,7 @@ function create_project($project)
 
 
 
-function update_project($project_id, $project)
-{
+function update_project($project_id, $project) {
     global $conn;
     if ($project_id > 0) {
         try {
@@ -131,8 +127,7 @@ function update_project($project_id, $project)
 }
 
 // change the updated_at date
-function touch_project($project_id)
-{
+function touch_project($project_id) {
     global $conn;
     if ($project_id > 0) {
         try {
@@ -154,8 +149,7 @@ function touch_project($project_id)
 
 
 
-function delete_project($project_id)
-{
+function delete_project($project_id) {
 
     global $conn;
     if ($project_id > 0) {
@@ -178,8 +172,7 @@ function delete_project($project_id)
 }
 
 
-function tasks_count($project_id)
-{
+function tasks_count($project_id) {
     global $conn;
 
     if ($project_id > 0) {
@@ -223,4 +216,48 @@ function tasks_count($project_id)
             return 0;
         };
     }
+}
+
+if (!function_exists('api_save_csv_string')) {
+    function api_save_csv_string($string) {
+
+        $new_string = html_entity_decode($string);
+        $new_string = str_replace(array("\r", "\n"), ' | ', $new_string);
+        $new_string = str_replace(';', ' ', $new_string);
+        $new_string = str_replace(',', ' ', $new_string);
+        $new_string = strip_tags($new_string);
+        return $new_string;
+    }
+}
+
+
+function show_project_as_csv($json) {
+
+    $csv_array = [];
+    $csv_header = array(
+        "Task",
+        "Minutes",
+    );
+    array_push($csv_array,   implode(',', $csv_header));
+
+
+    foreach ($json->tasks as $task) {
+        $csv_row = [
+            api_save_csv_string($task->content),
+            $task->time_taken
+        ];
+        array_push($csv_array,   implode(',', $csv_row));
+    }
+
+
+    // header('Content-Type: application/octet-stream');
+    // header('Content-Transfer-Encoding: binary');
+    // header('Expires: 0');
+    // header('Content-Encoding: UTF-8');
+    // header('Content-type: text/csv; charset=UTF-8');
+    // header('Content-Disposition: attachment; filename=project.csv');
+    $csv_string =   implode("\n", $csv_array);
+    // $csv_string = chr(255) . chr(254) . mb_convert_encoding($csv_string, 'UTF-16LE', 'UTF-8');
+    $csv_string =  mb_convert_encoding($csv_string, 'UTF-16LE', 'UTF-8');
+    return $csv_string;
 }

@@ -4,6 +4,14 @@
 
 
 $id = $_GET['id'];
+$show_csv = false;
+if (isset($_GET['format'])) {
+    $format = $_GET['format'];
+    if ($format === 'csv') {
+        $show_csv = true;
+    }
+}
+
 
 $project = get_project($id);
 if ($project) {
@@ -14,17 +22,13 @@ if ($project) {
     $project->uploads = $uploads;
     $project->id = intval($project->id);
 
-    echo json_encode($project);
-    
+    if ($show_csv) {
+        $csv = (object) ['csv' =>  show_project_as_csv($project)];
+        echo json_encode($csv);
+    } else {
+        echo json_encode($project);
+    }
 } else {
     http_response_code(404);
-    echo json_encode('error'); 
+    echo json_encode('error');
 }
-
-
-
-
-
-
-
-?>
