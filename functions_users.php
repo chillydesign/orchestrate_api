@@ -1,12 +1,18 @@
 <?php
 
 use Firebase\JWT\JWT;
-
+use Hautelook\Phpass\PasswordHash;
 
 function encrypt_password($password) {
-    $salt = PW_SALT;
-    $encrypted_password =  crypt($password, $salt);
+    $passwordHasher = new PasswordHash(8, false);
+    $encrypted_password = $passwordHasher->HashPassword($password);
     return $encrypted_password;
+}
+
+function password_is_correct($password, $encrypted) {
+    $passwordHasher = new PasswordHash(8, false);
+    $passwordMatch = $passwordHasher->CheckPassword($password, $encrypted);
+    return $passwordMatch;
 }
 
 
@@ -96,29 +102,28 @@ function get_current_user_from_jwt() {
 }
 
 
-function get_user_id_from_password($email, $password_digest) {
+function get_user_from_email($email) {
     global $conn;
-    if ($email != '' && $password_digest != '') {
+    if ($email != '') {
         try {
-            $query = "SELECT * FROM users WHERE email = :email AND  password_digest = :password_digest LIMIT 1";
+            $query = "SELECT password_digest, id, email FROM users WHERE email = :email  LIMIT 1";
             $user_query = $conn->prepare($query);
             $user_query->bindParam(':email', $email);
-            $user_query->bindParam(':password_digest', $password_digest);
             $user_query->setFetchMode(PDO::FETCH_OBJ);
             $user_query->execute();
             $users_count = $user_query->rowCount();
             if ($users_count == 1) {
-                $user_id =  $user_query->fetch()->id;
+                $user =  $user_query->fetch();
             } else {
-                $user_id = null;
+                $user = null;
             }
             unset($conn);
-            return $user_id;
+            return $user;
         } catch (PDOException $err) {
-            return false;
+            return null;
         };
     } else {
-        return false;
+        return null;
     }
 }
 

@@ -19,7 +19,7 @@ define("DB_PASSWORD",  getenv('DB_PASSWORD'));
 define("UPLOADDIR",  '/public/uploads/');
 define("FILELOC", dirname(__FILE__));
 
-define("PW_SALT", getenv('PW_SALT'));
+
 
 define("JWT_SECRET", getenv('JWT_SECRET'));
 define("JWT_ALG", getenv('JWT_ALG'));

@@ -5,17 +5,18 @@ $json = file_get_contents('php://input');
 $data = json_decode($json);
 
 $email = $data->email;
-$password = encrypt_password($data->password);
+$password = $data->password;
+$user_from_email = get_user_from_email($email);
 
-
-$user_id = get_user_id_from_password($email, $password);
-
-if ($user_id) {
-
-
-    $user_token = generate_jwt_token($user_id);
-    $jwt = (object) ['jwt' => $user_token];
-    echo json_encode($jwt);
+if ($user_from_email) {
+    if (password_is_correct($password, $user_from_email->password_digest)) {
+        $user_token = generate_jwt_token($user_from_email->id);
+        $jwt = (object) ['jwt' => $user_token];
+        echo json_encode($jwt);
+    } else {
+        http_response_code(404);
+        echo json_encode('error');
+    }
 } else {
     http_response_code(404);
     echo json_encode('error');
