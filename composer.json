@@ -1,0 +1,13 @@
+{
+    "name": "charles/orchestrate_api",
+    "description": "API for orchestrate",
+    "require": {
+        "firebase/php-jwt": "^5.4"
+    },
+    "authors": [
+        {
+            "name": "Charles Harvey",
+            "email": "harvey.charles@gmail.com"
+        }
+    ]
+}

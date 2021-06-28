@@ -7,8 +7,7 @@ $id = $_GET['id'];
 
 if ($id == 'me') {
 
-    $token = get_token_from_headers();
-    $user = get_user_from_token($token);
+    $user = get_current_user_from_jwt();
 } else {
     $user = get_user($id);
 }

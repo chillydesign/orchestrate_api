@@ -1,14 +1,14 @@
 <?php
 
+use Firebase\JWT\JWT;
+
+
 function encrypt_password($password) {
     $salt = PW_SALT;
     $encrypted_password =  crypt($password, $salt);
     return $encrypted_password;
 }
 
-function random_token() {
-    return  uniqid(rand(), true);
-}
 
 
 function get_user($user_id = null) {
@@ -55,26 +55,44 @@ function get_token_from_headers() {
 }
 
 
-function set_user_token($user_id) {
-    global $conn;
-    if ($user_id > 0) {
-        $user_token_date =  date('Y-m-d H:i:s');
-        $user_token =   random_token();
 
-        $query = "UPDATE users SET 
-                `user_token_date` = :user_token_date, 
-                `user_token` = :user_token
-                WHERE id = :id";
-        $task_query = $conn->prepare($query);
-        $task_query->bindParam(':user_token_date', $user_token_date);
-        $task_query->bindParam(':user_token', $user_token);
-        $task_query->bindParam(':id', $user_id);
-        $task_query->execute();
-        unset($conn);
-        return true;
-    } else {
-        return false;
+function generate_jwt_token($user_id) {
+    $secretKey  = JWT_SECRET;
+    $issuedAt   = new DateTimeImmutable();
+    $expire     = $issuedAt->modify('+6 minutes');
+    $data = [
+        'iat'  => $issuedAt->getTimestamp(),         // Issued at: time when the token was generated
+        'iss'  => JWT_SERVER,                        // Issuer
+        'nbf'  => $issuedAt->getTimestamp(),         // Not before
+        'exp'  => $expire->getTimestamp(),           // Expire
+        'user_id' => $user_id,                      // User name
+    ];
+
+    return JWT::encode($data,  $secretKey,  JWT_ALG);
+}
+
+function get_current_user_from_jwt() {
+    $current_user = null;
+    $jwt_token = get_token_from_headers();
+    if ($jwt_token) {
+        try {
+            JWT::$leeway = 60; // $leeway in seconds
+            $token = JWT::decode($jwt_token, JWT_SECRET, [JWT_ALG]);
+            $now = new DateTimeImmutable();
+
+            if (
+                $token->iss !== JWT_SERVER ||
+                $token->nbf > $now->getTimestamp() ||
+                $token->exp < $now->getTimestamp()
+            ) {
+                //
+            } else {
+                $current_user = get_user($token->user_id);
+            }
+        } catch (Exception $e) {
+        }
     }
+    return $current_user;
 }
 
 
@@ -96,32 +114,6 @@ function get_user_id_from_password($email, $password_digest) {
             }
             unset($conn);
             return $user_id;
-        } catch (PDOException $err) {
-            return false;
-        };
-    } else {
-        return false;
-    }
-}
-
-function get_user_from_token($user_token) {
-    global $conn;
-    if ($user_token) {
-        try {
-            $query = "SELECT * FROM users WHERE user_token = :user_token";
-            $user_query = $conn->prepare($query);
-            $user_query->bindParam(':user_token', $user_token);
-            $user_query->setFetchMode(PDO::FETCH_OBJ);
-            $user_query->execute();
-            $users_count = $user_query->rowCount();
-            if ($users_count == 1) {
-                $user =  $user_query->fetch();
-                $user =  processUser($user);
-            } else {
-                $user = null;
-            }
-            unset($conn);
-            return $user;
         } catch (PDOException $err) {
             return false;
         };
