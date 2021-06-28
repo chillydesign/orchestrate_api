@@ -174,6 +174,16 @@ function update_task($task_id, $task) {
         try {
 
             $completed = 0;
+            $is_title = 0;
+            $is_current = 0;
+            if ($task->is_title) {
+                $is_title = 1;
+            };
+            if ($task->is_current) {
+                $is_current = 1;
+            };
+
+
             if ($task->completed == true) {
                 $completed = 1;
                 if ($task->completed_at == null) {
@@ -191,6 +201,8 @@ function update_task($task_id, $task) {
             `indentation` = :indentation, 
             `ordering` = :ordering, 
             `priority` = :priority, 
+            `is_title` = :is_title, 
+            `is_current` = :is_current, 
             `updated_at` = :updated_at,
             `completed_at` = :completed_at ,
             `time_taken` = :time_taken 
@@ -201,6 +213,8 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':indentation',  $task->indentation);
             $task_query->bindParam(':priority',  $task->priority);
             $task_query->bindParam(':ordering',  $task->ordering);
+            $task_query->bindParam(':is_title',  $is_title);
+            $task_query->bindParam(':is_current',  $is_current);
             $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
             $task_query->bindParam(':completed_at', $task->completed_at);
@@ -245,6 +259,8 @@ function delete_task($task_id) {
 function processTask($task) {
     // if database is set as 1 it should return as true
     $task->completed =  ($task->completed == '1' || $task->completed == 1);
+    $task->is_title =  ($task->is_title == '1' || $task->is_title == 1);
+    $task->is_current =  ($task->is_current == '1' || $task->is_current == 1);
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
     $task->priority =  intval($task->priority);
