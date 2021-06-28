@@ -18,6 +18,7 @@ define("DB_PASSWORD",  getenv('DB_PASSWORD') );
 define("UPLOADDIR",  '/public/uploads/' );
 define("FILELOC", dirname(__FILE__) );
 
+define("PW_SALT", getenv('PW_SALT'));
 
 try {
 
@@ -31,10 +32,3 @@ try {
 } catch(PDOException $e) {
     echo 'ERROR: ' . $e->getMessage();
 }
-
-
-
-
-
-
-?>

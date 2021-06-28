@@ -10,3 +10,4 @@ include('functions_projects.php');
 include('functions_tasks.php');
 include('functions_uploads.php');
 include('functions_comments.php');
+include('functions_users.php');
