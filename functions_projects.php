@@ -250,14 +250,6 @@ function show_project_as_csv($json) {
     }
 
 
-    // header('Content-Type: application/octet-stream');
-    // header('Content-Transfer-Encoding: binary');
-    // header('Expires: 0');
-    // header('Content-Encoding: UTF-8');
-    // header('Content-type: text/csv; charset=UTF-8');
-    // header('Content-Disposition: attachment; filename=project.csv');
     $csv_string =   implode("\n", $csv_array);
-    // $csv_string = chr(255) . chr(254) . mb_convert_encoding($csv_string, 'UTF-16LE', 'UTF-8');
-    // $csv_string =  mb_convert_encoding($csv_string, 'UTF-16LE', 'UTF-8');
     return $csv_string;
 }
