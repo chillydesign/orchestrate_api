@@ -21,6 +21,7 @@ if ($project) {
     $project->tasks = $tasks;
     $project->uploads = $uploads;
     $project->id = intval($project->id);
+    $project->client = get_client($project->client_id);
 
     if ($show_csv) {
         $csv = (object) ['csv' =>  show_project_as_csv($project)];
