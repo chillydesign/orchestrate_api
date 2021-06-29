@@ -1,21 +1,31 @@
 <?php
 
 
-function get_tasks($project_id) {
+function get_tasks($opts) {
     global $conn;
 
-    if ($project_id !== null) {
-        $query = "SELECT *  FROM tasks
-        WHERE project_id = :project_id 
-        ORDER BY tasks.ordering ASC, tasks.created_at ASC";
-    } else {
-        $query = "SELECT *  FROM tasks ORDER BY  tasks.project_id ASC, tasks.created_at DESC";
+
+    $proj_sql = '';
+    if (isset($opts['project_id'])) {
+        $proj_sql = 'AND project_id = :project_id ';
     }
+
+    $cur_sql = '';
+    if (isset($opts['is_current'])) {
+        $cur_sql =  ' AND is_current = 1 ';
+    }
+
+    $query = "SELECT *  FROM tasks  WHERE 1=1 $proj_sql $cur_sql ORDER BY tasks.ordering ASC, tasks.created_at ASC";
+
 
     try {
 
         $tasks_query = $conn->prepare($query);
-        $tasks_query->bindParam(':project_id', $project_id);
+        if (isset($opts['project_id'])) {
+            $tasks_query->bindParam(':project_id', $opts['project_id'],  PDO::PARAM_INT);
+        }
+
+
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
         $tasks_count = $tasks_query->rowCount();
