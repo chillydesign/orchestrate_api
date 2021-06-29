@@ -5,11 +5,22 @@ $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
 
-$projects = get_projects( array('limit' => $limit, 'offset' => $offset, 'status' => $status)  );
+$projects = get_projects(array('limit' => $limit, 'offset' => $offset, 'status' => $status));
+$clients = get_clients();
 
 
-foreach($projects as $project) {
-    $project->tasks_count =  tasks_count($project->id);   
+foreach ($projects as $project) {
+    $project->tasks_count =  tasks_count($project->id);
+
+
+    $p_clients =  array_filter($clients, function ($e) use ($project) {
+        return $e->id == $project->client_id;
+    });
+    // var_dump(($p_clients));
+    if (sizeof($p_clients) > 0) {
+        $project->client = reset($p_clients);
+    }
+
     // // if project is active and has incomplete tasks, give it some random tasks to show 
     // if ($project->status == 'active') {
     //     if ($project->tasks_count->incomplete > 0 ) {
@@ -19,9 +30,6 @@ foreach($projects as $project) {
 
 
 }
-    
+
 
 echo json_encode($projects);
-
-
-?>

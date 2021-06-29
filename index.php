@@ -111,6 +111,27 @@ if (isset($_GET['route'])) {
     if ($route == 'user_token') {
         include('routes/user_token/create.php');
     }
+
+
+    if ($route == 'clients') {
+        if (isset($_GET['id'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                include('routes/clients/delete.php');
+            } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+                include('routes/clients/update.php');
+            } else {
+                include('routes/clients/show.php');
+            }
+        } else 
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            include('routes/clients/create.php');
+        } else {
+            include('routes/clients/index.php');
+        }
+    } // end of if route is clients
+
+
+
 } else {
     //  error
     http_response_code(404);

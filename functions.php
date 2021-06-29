@@ -11,3 +11,4 @@ include('functions_tasks.php');
 include('functions_uploads.php');
 include('functions_comments.php');
 include('functions_users.php');
+include('functions_clients.php');

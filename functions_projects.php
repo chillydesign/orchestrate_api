@@ -28,6 +28,7 @@ function get_projects($opts = null) {
 
         if ($projects_count > 0) {
             $projects =  $projects_query->fetchAll();
+            $projects = processProjects($projects);
         } else {
             $projects =  [];
         }
@@ -58,6 +59,7 @@ function get_project($project_id = null) {
 
             if ($project_count == 1) {
                 $project =  $project_query->fetch();
+                $project = processProject($project);
             } else {
                 $project =  null;
             }
@@ -80,9 +82,10 @@ function create_project($project) {
     if (!empty($project->name)) {
 
         try {
-            $query = "INSERT INTO projects (name) VALUES (:name)";
+            $query = "INSERT INTO projects (name, client_id) VALUES (:name, :client_id)";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':name', $project->name);
+            $project_query->bindParam(':client_id', $project->client_id);
             $project_query->execute();
             $project_id = $conn->lastInsertId();
             unset($conn);
@@ -107,10 +110,16 @@ function update_project($project_id, $project) {
         try {
 
             $updated_at = updated_at_string();
-            $query = "UPDATE projects SET `name` = :name,  `status` = :status, `updated_at` = :updated_at WHERE id = :id";
+            $query = "UPDATE projects SET
+              `name` = :name,  
+              `client_id` = :client_id,  
+              `status` = :status, 
+              `updated_at` = :updated_at 
+              WHERE id = :id";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':name', $project->name);
             $project_query->bindParam(':status', $project->status);
+            $project_query->bindParam(':client_id', $project->client_id);
             $project_query->bindParam(':updated_at', $updated_at);
 
             $project_query->bindParam(':id', $project_id);
@@ -248,8 +257,26 @@ function show_project_as_csv($json) {
         ];
         array_push($csv_array,   implode(',', $csv_row));
     }
-
-
     $csv_string =   implode("\n", $csv_array);
     return $csv_string;
+}
+
+
+
+function processProject($project) {
+    if ($project->client_id) {
+        $project->client_id =  intval($project->client_id);
+    }
+    $project->id =  intval($project->id);
+    return $project;
+}
+
+
+function processProjects($projects) {
+
+    foreach ($projects as $project) {
+        processProject($project);
+    }
+
+    return $projects;
 }
