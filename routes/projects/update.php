@@ -10,6 +10,10 @@ if (!empty($data->attributes)) {
 
     $project_attributes = $data->attributes;
     $updated = update_project($id, $project_attributes);
+    if (isset($project_attributes->move_incomplete_to_project_id)) {
+        $new_project_id = $project_attributes->move_incomplete_to_project_id;
+        move_incomplete_tasks($id, $new_project_id);
+    }
 
     if ($updated) {
         $project = get_project($id);
@@ -17,15 +21,9 @@ if (!empty($data->attributes)) {
         echo json_encode($project);
     } else {
         http_response_code(404);
-        echo json_encode( 'Error'  );
+        echo json_encode('Error');
     }
-
-
-
 } else {
     http_response_code(404);
-    echo json_encode( 'Error'  );
+    echo json_encode('Error');
 }
-
-
-?>

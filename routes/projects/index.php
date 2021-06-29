@@ -4,8 +4,9 @@
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
+$client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
 
-$projects = get_projects(array('limit' => $limit, 'offset' => $offset, 'status' => $status));
+$projects = get_projects(array('limit' => $limit, 'offset' => $offset, 'status' => $status, 'client_id' => $client_id));
 $clients = get_clients();
 
 

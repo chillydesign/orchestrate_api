@@ -6,22 +6,44 @@ function get_projects($opts = null) {
     global $conn;
 
     if ($opts == null) {
-        $opts =  array('limit' => 10, 'offset' => 0, 'status' => 'active');
-    };
+        $opts =  array();
+    }
+    if (!isset($opts['offset'])) {
+        $opts['offset'] = 0;
+    }
+    if (!isset($opts['limit'])) {
+        $opts['limit'] = 10;
+    }
+    if (!isset($opts['status'])) {
+        $opts['status'] = 'active';
+    }
+    if (!isset($opts['client_id'])) {
+        $opts['client_id'] = null;
+    }
 
     $limit  = intval($opts['limit']);
     $offset = intval($opts['offset']);
     $status = $opts['status'];
+    $client_id = $opts['client_id'];
+
+    $client_id_sql = '';
+    if ($client_id) {
+        $client_id_sql = '  AND client_id = :client_id';
+    }
 
     try {
         $query = "SELECT *  FROM projects
         WHERE status = :status
+        $client_id_sql
         ORDER BY projects.status ASC, projects.updated_at DESC
         LIMIT :limit OFFSET :offset ";
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
         $projects_query->bindParam(':status', $status);
+        if ($client_id_sql != '') {
+            $projects_query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
+        }
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
         $projects_count = $projects_query->rowCount();
@@ -134,6 +156,44 @@ function update_project($project_id, $project) {
         return false;
     }
 }
+
+
+
+
+// UPDATE `tasks` SET `project_id` = '2' WHERE `tasks`.`id` = 1; 
+
+
+
+
+function move_incomplete_tasks($old_project_id, $new_project_id) {
+    global $conn;
+
+    $new_project = get_project($new_project_id);
+    $old_project = get_project($old_project_id);
+    $completed = 0;
+
+    if ($new_project && $old_project) {
+        try {
+
+            $query = "UPDATE tasks SET  `project_id` = :new_project_id
+            WHERE project_id = :old_project_id  AND completed = :completed";
+            $task_query = $conn->prepare($query);
+            $task_query->bindParam(':new_project_id', $new_project_id);
+            $task_query->bindParam(':old_project_id', $old_project_id);
+            $task_query->bindParam(':completed', $completed);
+            $task_query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+
+            return false;
+        };
+    } else {
+        return false;
+    }
+}
+
+
 
 // change the updated_at date
 function touch_project($project_id) {
