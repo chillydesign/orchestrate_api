@@ -3,10 +3,20 @@
 
 
 
-$id = $_GET['id'];
 
 
-$client = get_client($id);
+
+
+if (isset($_GET['slug'])) {
+    $slug = $_GET['slug'];
+    $client = get_client_from_slug($slug);
+} else {
+    $id = $_GET['id'];
+    $client = get_client($id);
+}
+
+
+
 if ($client) {
 
 
