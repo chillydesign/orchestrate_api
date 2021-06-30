@@ -15,7 +15,7 @@ function get_tasks($opts) {
         $cur_sql =  ' AND is_current = 1 ';
     }
 
-    $query = "SELECT *  FROM tasks  WHERE 1=1 $proj_sql $cur_sql ORDER BY task.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
+    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
