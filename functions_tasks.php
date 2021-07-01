@@ -14,8 +14,12 @@ function get_tasks($opts) {
     if (isset($opts['is_current'])) {
         $cur_sql =  ' AND is_current = 1 ';
     }
+    $com_sql = '';
+    if (isset($opts['completed'])) {
+        $com_sql = 'AND completed = :completed ';
+    }
 
-    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
+    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $com_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
@@ -23,6 +27,9 @@ function get_tasks($opts) {
         $tasks_query = $conn->prepare($query);
         if (isset($opts['project_id'])) {
             $tasks_query->bindParam(':project_id', $opts['project_id'],  PDO::PARAM_INT);
+        }
+        if (isset($opts['completed'])) {
+            $tasks_query->bindParam(':completed', $opts['completed'],  PDO::PARAM_INT);
         }
 
 

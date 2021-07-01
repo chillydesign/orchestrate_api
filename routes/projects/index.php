@@ -5,8 +5,15 @@ $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
 $client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
+$current = isset($_GET['current']) ? $_GET['current'] : null;
 
-$projects = get_projects(array('limit' => $limit, 'offset' => $offset, 'status' => $status, 'client_id' => $client_id));
+$projects = get_projects(array(
+    'limit' => $limit,
+    'offset' => $offset,
+    'status' => $status,
+    'client_id' => $client_id,
+    'current' => $current,
+));
 $clients = get_clients();
 
 
@@ -17,7 +24,7 @@ foreach ($projects as $project) {
     $p_clients =  array_filter($clients, function ($e) use ($project) {
         return $e->id == $project->client_id;
     });
-    // var_dump(($p_clients));
+
     if (sizeof($p_clients) > 0) {
         $project->client = reset($p_clients);
     }
@@ -29,7 +36,9 @@ foreach ($projects as $project) {
     //     }
     // }
 
-
+    if ($current) {
+        $project->tasks = get_tasks(array('project_id' => $project->id, 'completed' => 0,  'is_current' => true));
+    }
 }
 
 

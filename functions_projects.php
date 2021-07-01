@@ -20,23 +20,37 @@ function get_projects($opts = null) {
     if (!isset($opts['client_id'])) {
         $opts['client_id'] = null;
     }
+    if (!isset($opts['current'])) {
+        $opts['current'] = null;
+    }
 
     $limit  = intval($opts['limit']);
     $offset = intval($opts['offset']);
     $status = $opts['status'];
     $client_id = $opts['client_id'];
+    $current = ($opts['current']);
 
     $client_id_sql = '';
     if ($client_id) {
         $client_id_sql = '  AND client_id = :client_id';
     }
+    $cur_dist_sql = '';
+    $cur_join_sql = '';
+    $cur_sql = '';
+    if ($current) {
+        $cur_dist_sql = ' DISTINCT';
+        $cur_join_sql = ' LEFT JOIN tasks ON tasks.project_id = projects.id ';
+        $cur_sql = ' AND tasks.is_current = 1 AND tasks.completed = 0';
+    }
 
     try {
-        $query = "SELECT *  FROM projects
+        $query = "SELECT  $cur_dist_sql projects.*  FROM projects $cur_join_sql
         WHERE status = :status
         $client_id_sql
+        $cur_sql
         ORDER BY projects.status ASC, projects.updated_at DESC
         LIMIT :limit OFFSET :offset ";
+
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
