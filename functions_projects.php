@@ -117,9 +117,12 @@ function create_project($project) {
     global $conn;
     if (!empty($project->name)) {
 
-        if ($project->month == '') {
-            $project->month = null;
+        if (isset($project->month)) {
+            if ($project->month == '') {
+                $project->month = null;
+            }
         }
+
 
         try {
             $query = "INSERT INTO projects (name, client_id, month) VALUES (:name, :client_id, :month)";
@@ -133,7 +136,7 @@ function create_project($project) {
 
             return ($project_id);
         } catch (PDOException $err) {
-
+            // var_dump($err);
             return false;
         };
     } else { // project name was blank
