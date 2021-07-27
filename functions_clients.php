@@ -79,6 +79,67 @@ function get_client_from_slug($slug = null) {
 
 
 
+
+function create_client($client) {
+    global $conn;
+    if (!empty($client->name) && !empty($client->slug)) {
+
+        try {
+            $query = "INSERT INTO clients (name, slug) VALUES (:name, :slug)";
+            $client_query = $conn->prepare($query);
+            $client_query->bindParam(':name', $client->name);
+            $client_query->bindParam(':slug', $client->slug);
+            $client_query->execute();
+            $client_id = $conn->lastInsertId();
+            unset($conn);
+
+            return ($client_id);
+        } catch (PDOException $err) {
+
+            return false;
+        };
+    } else { // client name was blank
+        return false;
+    }
+}
+
+
+
+
+
+function update_client($client_id, $client) {
+    global $conn;
+    if ($client_id > 0) {
+        try {
+
+
+
+            $updated_at = updated_at_string();
+            $query = "UPDATE clients SET
+              `name` = :name,  
+              `slug` = :slug,  
+              `updated_at` = :updated_at 
+              WHERE id = :id";
+            $client_query = $conn->prepare($query);
+            $client_query->bindParam(':name', $client->name);
+            $client_query->bindParam(':slug', $client->slug);
+            $client_query->bindParam(':updated_at', $updated_at);
+            $client_query->bindParam(':id', $client_id);
+            $client_query->execute();
+            unset($conn);
+
+            return true;
+        } catch (PDOException $err) {
+            var_dump($err);
+            return false;
+        };
+    } else { // client name was blank
+        return false;
+    }
+}
+
+
+
 function processClient($client) {
 
     $client->id =  intval($client->id);

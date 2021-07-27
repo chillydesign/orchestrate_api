@@ -117,11 +117,16 @@ function create_project($project) {
     global $conn;
     if (!empty($project->name)) {
 
+        if ($project->month == '') {
+            $project->month = null;
+        }
+
         try {
-            $query = "INSERT INTO projects (name, client_id) VALUES (:name, :client_id)";
+            $query = "INSERT INTO projects (name, client_id, month) VALUES (:name, :client_id, :month)";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':name', $project->name);
             $project_query->bindParam(':client_id', $project->client_id);
+            $project_query->bindParam(':month', $project->month);
             $project_query->execute();
             $project_id = $conn->lastInsertId();
             unset($conn);
@@ -145,19 +150,25 @@ function update_project($project_id, $project) {
     if ($project_id > 0) {
         try {
 
+
+            if ($project->month == '') {
+                $project->month = null;
+            }
+
             $updated_at = updated_at_string();
             $query = "UPDATE projects SET
               `name` = :name,  
               `client_id` = :client_id,  
               `status` = :status, 
+              `month` = :month, 
               `updated_at` = :updated_at 
               WHERE id = :id";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':name', $project->name);
             $project_query->bindParam(':status', $project->status);
             $project_query->bindParam(':client_id', $project->client_id);
+            $project_query->bindParam(':month', $project->month);
             $project_query->bindParam(':updated_at', $updated_at);
-
             $project_query->bindParam(':id', $project_id);
             $project_query->execute();
             unset($conn);
