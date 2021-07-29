@@ -14,12 +14,19 @@ function get_tasks($opts) {
     if (isset($opts['is_current'])) {
         $cur_sql =  ' AND is_current = 1 ';
     }
+    $ass_sql = '';
+    if (isset($opts['assignee_id'])) {
+        $ass_sql =  ' AND assignee_id = :assignee_id ';
+    }
+
+
+
     $com_sql = '';
     if (isset($opts['completed'])) {
         $com_sql = 'AND completed = :completed ';
     }
 
-    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $com_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
+    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
@@ -30,6 +37,9 @@ function get_tasks($opts) {
         }
         if (isset($opts['completed'])) {
             $tasks_query->bindParam(':completed', $opts['completed'],  PDO::PARAM_INT);
+        }
+        if (isset($opts['assignee_id'])) {
+            $tasks_query->bindParam(':assignee_id', $opts['assignee_id'],  PDO::PARAM_INT);
         }
 
 

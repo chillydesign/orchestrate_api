@@ -23,12 +23,16 @@ function get_projects($opts = null) {
     if (!isset($opts['current'])) {
         $opts['current'] = null;
     }
+    if (!isset($opts['assignee_id'])) {
+        $opts['assignee_id'] = null;
+    }
 
     $limit  = intval($opts['limit']);
     $offset = intval($opts['offset']);
     $status = $opts['status'];
     $client_id = $opts['client_id'];
     $current = ($opts['current']);
+    $assignee_id = ($opts['assignee_id']);
 
     $client_id_sql = '';
     if ($client_id) {
@@ -37,10 +41,10 @@ function get_projects($opts = null) {
     $cur_dist_sql = '';
     $cur_join_sql = '';
     $cur_sql = '';
-    if ($current) {
+    if ($current && $assignee_id) {
         $cur_dist_sql = ' DISTINCT';
         $cur_join_sql = ' LEFT JOIN tasks ON tasks.project_id = projects.id ';
-        $cur_sql = ' AND tasks.is_current = 1 AND tasks.completed = 0';
+        $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
     }
 
     try {

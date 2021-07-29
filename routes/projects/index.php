@@ -6,6 +6,7 @@ $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
 $client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
 $current = isset($_GET['current']) ? $_GET['current'] : null;
+$assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
 
 $projects = get_projects(array(
     'limit' => $limit,
@@ -13,6 +14,7 @@ $projects = get_projects(array(
     'status' => $status,
     'client_id' => $client_id,
     'current' => $current,
+    'assignee_id' => $assignee_id,
 ));
 $clients = get_clients();
 
@@ -37,7 +39,14 @@ foreach ($projects as $project) {
     // }
 
     if ($current) {
-        $project->tasks = get_tasks(array('project_id' => $project->id, 'completed' => 0,  'is_current' => true));
+        $project->tasks = get_tasks(
+            array(
+                'project_id' => $project->id,
+                'completed' => 0,
+                'assignee_id' => $assignee_id,
+                'is_current' => true
+            )
+        );
         addUsersToTasks($project->tasks);
     }
 }
