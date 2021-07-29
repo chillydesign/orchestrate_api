@@ -13,9 +13,12 @@ if (isset($_GET['format'])) {
 }
 
 
+
 $project = get_project($id);
 if ($project) {
     $tasks = get_tasks(array('project_id' => $id));
+    addUsersToTasks($tasks);
+
     $uploads = get_uploads($id);
 
     $project->tasks = $tasks;

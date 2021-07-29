@@ -304,3 +304,14 @@ function processTasks($tasks) {
 
     return $tasks;
 }
+
+function  addUsersToTasks($tasks) {
+    $users = get_users();
+    foreach ($tasks as $task) {
+        foreach ($users as $user) {
+            if ($user->id === $task->assignee_id) {
+                $task->assignee = $user;
+            }
+        }
+    }
+}

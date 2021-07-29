@@ -9,7 +9,6 @@ if (isset($_GET['is_current'])) {
 }
 
 $tasks = get_tasks($opts);
-
-
+addUsersToTasks($tasks);
 
 echo json_encode($tasks);

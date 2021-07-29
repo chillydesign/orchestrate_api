@@ -38,6 +38,7 @@ foreach ($projects as $project) {
 
     if ($current) {
         $project->tasks = get_tasks(array('project_id' => $project->id, 'completed' => 0,  'is_current' => true));
+        addUsersToTasks($project->tasks);
     }
 }
 
