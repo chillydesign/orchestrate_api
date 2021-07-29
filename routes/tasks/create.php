@@ -22,13 +22,12 @@ if (!empty($data->attributes)) {
         echo json_encode($task);
     } else {
         http_response_code(404);
-        echo json_encode( 'Error' );
+        echo json_encode( 'Error 1' );
     }
 
 
 
 } else {
     http_response_code(404);
-    echo json_encode( 'Error'  );
+    echo json_encode( 'Error 2'  );
 }
-?>

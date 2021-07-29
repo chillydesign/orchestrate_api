@@ -145,7 +145,7 @@ function create_task($task) {
             unset($conn);
             return ($task_id);
         } catch (PDOException $err) {
-
+            var_dump($err);
             return false;
         };
     } else { // task project_id was blank
@@ -193,12 +193,17 @@ function update_task($task_id, $task) {
             $completed = 0;
             $is_title = 0;
             $is_current = 0;
+            $assignee_id = 0;
             if ($task->is_title) {
                 $is_title = 1;
             };
             if ($task->is_current) {
                 $is_current = 1;
             };
+            if ($task->assignee_id) {
+                $assignee_id = $task->assignee_id;
+            };
+
 
 
             if ($task->completed == true) {
@@ -220,6 +225,7 @@ function update_task($task_id, $task) {
             `priority` = :priority, 
             `is_title` = :is_title, 
             `is_current` = :is_current, 
+            `assignee_id` = :assignee_id, 
             `updated_at` = :updated_at,
             `completed_at` = :completed_at ,
             `time_taken` = :time_taken 
@@ -232,6 +238,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':ordering',  $task->ordering);
             $task_query->bindParam(':is_title',  $is_title);
             $task_query->bindParam(':is_current',  $is_current);
+            $task_query->bindParam(':assignee_id',  $assignee_id);
             $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
             $task_query->bindParam(':completed_at', $task->completed_at);
@@ -284,6 +291,7 @@ function processTask($task) {
     $task->time_taken =  intval($task->time_taken);
     $task->id =  intval($task->id);
     $task->project_id =  intval($task->project_id);
+    $task->assignee_id =  intval($task->assignee_id);
     return $task;
 }
 

@@ -16,6 +16,30 @@ function password_is_correct($password, $encrypted) {
 }
 
 
+function get_users() {
+    global $conn;
+
+
+    try {
+        $query = "SELECT  *  FROM users  ORDER BY users.name ASC ";
+        $users_query = $conn->prepare($query);
+        $users_query->setFetchMode(PDO::FETCH_OBJ);
+        $users_query->execute();
+        $users_count = $users_query->rowCount();
+        if ($users_count > 0) {
+            $users =  $users_query->fetchAll();
+            $users = processUsers($users);
+        } else {
+            $users =  [];
+        }
+        unset($conn);
+        return $users;
+    } catch (PDOException $err) {
+        return [];
+    };
+}
+
+
 
 function get_user($user_id = null) {
 
