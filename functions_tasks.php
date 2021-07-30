@@ -98,6 +98,43 @@ function get_random_incomplete_tasks($project_id, $limit) {
 
 
 
+function get_tasks_completed_today() {
+    global $conn;
+
+    $today = date("Y-m-d");
+    $completed_at_start = $today .  ' 00:00:00';
+    $completed_at_end = $today .  ' 23:59:59';
+
+    $query = "SELECT *  FROM tasks
+        WHERE completed_at > :completed_at_start  
+        AND completed_at < :completed_at_end
+        AND completed = 1
+        ORDER BY completed_at DESC ";
+
+    try {
+        $tasks_query = $conn->prepare($query);
+        $tasks_query->bindParam(':completed_at_start', $completed_at_start);
+        $tasks_query->bindParam(':completed_at_end', $completed_at_end);
+        $tasks_query->setFetchMode(PDO::FETCH_OBJ);
+        $tasks_query->execute();
+        $tasks_count = $tasks_query->rowCount();
+
+
+        if ($tasks_count > 0) {
+            $tasks =  $tasks_query->fetchAll();
+            $tasks = processTasks($tasks);
+        } else {
+            $tasks =  [];
+        }
+        unset($conn);
+        return $tasks;
+    } catch (PDOException $err) {
+        return [];
+    };
+}
+
+
+
 function get_task($task_id = null) {
     global $conn;
     if ($task_id != null) {
