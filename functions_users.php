@@ -89,7 +89,7 @@ function get_token_from_headers() {
 function generate_jwt_token($user_id) {
     $secretKey  = JWT_SECRET;
     $issuedAt   = new DateTimeImmutable();
-    $expire     = $issuedAt->modify('+360 minutes');
+    $expire     = $issuedAt->modify('+2880 minutes'); // two days
     $data = [
         'iat'  => $issuedAt->getTimestamp(),         // Issued at: time when the token was generated
         'iss'  => JWT_SERVER,                        // Issuer
