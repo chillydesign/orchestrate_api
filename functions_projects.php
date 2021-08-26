@@ -52,7 +52,7 @@ function get_projects($opts = null) {
         WHERE status = :status
         $client_id_sql
         $cur_sql
-        ORDER BY projects.status ASC, projects.updated_at DESC
+        ORDER BY projects.status ASC,  projects.incomplete_tasks_count DESC, projects.updated_at DESC
         LIMIT :limit OFFSET :offset ";
 
         $projects_query = $conn->prepare($query);
@@ -231,11 +231,19 @@ function move_incomplete_tasks($old_project_id, $new_project_id) {
 function touch_project($project_id) {
     global $conn;
     if ($project_id > 0) {
+
+        // get tasks count and get incomplete tasks count
+        $tasks_count = tasks_count($project_id);
+        $total = $tasks_count->total;
+        $incomplete = $tasks_count->incomplete;
+
         try {
             $updated_at = updated_at_string();
-            $query = "UPDATE projects SET `updated_at` = :updated_at WHERE id = :id";
+            $query = "UPDATE projects SET `updated_at` = :updated_at, `tasks_count` = :total, `incomplete_tasks_count` = :incomplete WHERE id = :id";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':updated_at', $updated_at);
+            $project_query->bindParam(':total', $total);
+            $project_query->bindParam(':incomplete', $incomplete);
             $project_query->bindParam(':id', $project_id);
             $project_query->execute();
             unset($conn);

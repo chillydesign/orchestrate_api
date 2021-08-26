@@ -20,8 +20,6 @@ $clients = get_clients();
 
 
 foreach ($projects as $project) {
-    $project->tasks_count =  tasks_count($project->id);
-
 
     $p_clients =  array_filter($clients, function ($e) use ($project) {
         return $e->id == $project->client_id;
