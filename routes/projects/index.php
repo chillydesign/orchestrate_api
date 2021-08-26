@@ -2,12 +2,6 @@
 
 
 
-$all_projects = get_projects(array('limit' => 9999999));
-
-foreach ($all_projects as $project) {
-    touch_project($project->id);
-}
-
 
 
 
