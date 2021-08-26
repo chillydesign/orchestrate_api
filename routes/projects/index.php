@@ -1,6 +1,16 @@
 <?php
 
 
+
+$all_projects = get_projects(array('limit' => 9999999));
+
+foreach ($all_projects as $project) {
+    touch_project($project->id);
+}
+
+
+
+
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
 $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';

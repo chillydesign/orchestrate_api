@@ -239,9 +239,8 @@ function touch_project($project_id) {
 
         try {
             $updated_at = updated_at_string();
-            $query = "UPDATE projects SET `updated_at` = :updated_at, `tasks_count` = :total, `incomplete_tasks_count` = :incomplete WHERE id = :id";
+            $query = "UPDATE projects SET  `tasks_count` = :total, `incomplete_tasks_count` = :incomplete WHERE id = :id";
             $project_query = $conn->prepare($query);
-            $project_query->bindParam(':updated_at', $updated_at);
             $project_query->bindParam(':total', $total);
             $project_query->bindParam(':incomplete', $incomplete);
             $project_query->bindParam(':id', $project_id);
