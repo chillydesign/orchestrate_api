@@ -1,7 +1,7 @@
 <?php
 
 
-
+touch_all_projects();
 
 
 
