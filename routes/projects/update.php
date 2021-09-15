@@ -13,6 +13,9 @@ if (!empty($data->attributes)) {
     if (isset($project_attributes->move_incomplete_to_project_id)) {
         $new_project_id = $project_attributes->move_incomplete_to_project_id;
         move_incomplete_tasks($id, $new_project_id);
+
+        touch_project($new_project_id); // update the new task counts
+        touch_project($id); // update the new task counts
     }
 
     if ($updated) {
