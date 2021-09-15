@@ -9,6 +9,7 @@ $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
 $status = isset($_GET['status']) ? $_GET['status'] : 'active';
 $client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
 $current = isset($_GET['current']) ? $_GET['current'] : null;
+$include_tasks = isset($_GET['include_tasks']) ? $_GET['include_tasks'] : null;
 $assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
 
 $projects = get_projects(array(
@@ -17,6 +18,7 @@ $projects = get_projects(array(
     'status' => $status,
     'client_id' => $client_id,
     'current' => $current,
+    'include_tasks' => $include_tasks,
     'assignee_id' => $assignee_id,
 ));
 $clients = get_clients();
@@ -49,6 +51,13 @@ foreach ($projects as $project) {
             )
         );
         addUsersToTasks($project->tasks);
+    } else if ($include_tasks) {
+        $project->tasks = get_tasks(
+            array(
+                'project_id' => $project->id,
+                'completed' => 0
+            )
+        );
     }
 }
 
