@@ -138,7 +138,27 @@ function update_client($client_id, $client) {
     }
 }
 
+// change the updated_at date
+function touch_client($client_id) {
+    global $conn;
+    if ($client_id > 0) {
 
+        try {
+            $updated_at = updated_at_string();
+            $query = "UPDATE clients SET `updated_at` = :updated_at WHERE id = :id";
+            $client_query = $conn->prepare($query);
+            $client_query->bindParam(':updated_at', $updated_at);
+            $client_query->bindParam(':id', $client_id);
+            $client_query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+            return false;
+        };
+    } else { // project name was blank
+        return false;
+    }
+}
 
 function processClient($client) {
 

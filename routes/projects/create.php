@@ -17,16 +17,9 @@ if (!empty($data->attributes)) {
         echo json_encode($project);
     } else {
         http_response_code(404);
-        echo json_encode( 'Error' );
+        echo json_encode('Error');
     }
-
-
-
 } else {
     http_response_code(404);
-    echo json_encode( 'Error'  );
+    echo json_encode('Error');
 }
-
-
-
-
