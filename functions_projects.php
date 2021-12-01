@@ -352,6 +352,7 @@ function show_project_as_csv($json) {
     $csv_array = [];
     $csv_header = array(
         "Task",
+        "Translation",
         "Minutes",
     );
     array_push($csv_array,   implode(',', $csv_header));
@@ -360,6 +361,7 @@ function show_project_as_csv($json) {
     foreach ($json->tasks as $task) {
         $csv_row = [
             api_save_csv_string($task->content),
+            api_save_csv_string($task->translation),
             $task->time_taken
         ];
         array_push($csv_array,   implode(',', $csv_row));
