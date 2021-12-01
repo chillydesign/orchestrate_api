@@ -12,6 +12,7 @@ if ($user_from_email) {
     if (password_is_correct($password, $user_from_email->password_digest)) {
         $user_token = generate_jwt_token($user_from_email->id);
         $jwt = (object) ['jwt' => $user_token];
+        http_response_code(200);
         echo json_encode($jwt);
     } else {
         http_response_code(404);
