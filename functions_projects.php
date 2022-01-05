@@ -39,6 +39,7 @@ function get_projects($opts = null) {
         $client_id_sql = '  AND client_id = :client_id';
     }
     $cur_dist_sql = '';
+    $status_sql = '';
     $cur_join_sql = '';
     $cur_sql = '';
     if ($current && $assignee_id) {
@@ -47,9 +48,17 @@ function get_projects($opts = null) {
         $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
     }
 
+    if ($status) { {
+            if ($status != 'all') {
+                $status_sql = ' AND status = "' . $status . '"  ';
+            }
+        }
+    }
+
     try {
         $query = "SELECT  $cur_dist_sql projects.*  FROM projects $cur_join_sql
-        WHERE status = :status
+        WHERE 1 = 1
+        $status_sql
         $client_id_sql
         $cur_sql
         ORDER BY projects.status ASC,  projects.incomplete_tasks_count DESC, projects.updated_at DESC
@@ -58,7 +67,6 @@ function get_projects($opts = null) {
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
-        $projects_query->bindParam(':status', $status);
         if ($client_id_sql != '') {
             $projects_query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
         }

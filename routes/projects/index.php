@@ -12,6 +12,11 @@ $current = isset($_GET['current']) ? $_GET['current'] : null;
 $include_tasks = isset($_GET['include_tasks']) ? $_GET['include_tasks'] : null;
 $assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
 
+if ($client_id) {
+    $status = 'all';
+    $limit = 100000;
+}
+
 $projects = get_projects(array(
     'limit' => $limit,
     'offset' => $offset,
