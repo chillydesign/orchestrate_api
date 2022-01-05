@@ -26,7 +26,8 @@ function get_tasks($opts) {
         $com_sql = 'AND completed = :completed ';
     }
 
-    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql ORDER BY tasks.completed ASC,  tasks.ordering ASC, tasks.created_at ASC";
+    // tasks.completed ASC,
+    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql ORDER BY   tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
