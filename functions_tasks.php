@@ -98,25 +98,86 @@ function get_random_incomplete_tasks($project_id, $limit) {
 }
 
 
+function  last_30_days() {
+    $days = array();
+    $today     = new DateTime(); // today
+    $begin     = $today->sub(new DateInterval('P30D')); //created 30 days interval back
+    $end       = new DateTime();
+    $end       = $end->modify('+1 day'); // interval generates upto last day
+    $interval  = new DateInterval('P1D'); // 1d interval range
+    $daterange = new DatePeriod($begin, $interval, $end); // it always runs forwards in date
+    foreach ($daterange as $date) { // date object
+        $days[] = $date->format("Y-m-d"); // your date
+    }
+
+    return $days;
+}
+
+
+
+function totalHoursOnDay($day) {
+    global $conn;
+    $s_a_e = start_and_end_for_tasks_completed_today($day);
+    $s = $s_a_e[0];
+    $e = $s_a_e[1];
+
+    $query = "SELECT sum(time_taken) as t  FROM tasks
+    WHERE completed_at > :completed_at_start  
+    AND completed_at < :completed_at_end
+    AND completed = 1 ";
+
+    try {
+        $tasks_query = $conn->prepare($query);
+        $tasks_query->bindParam(':completed_at_start', $s);
+        $tasks_query->bindParam(':completed_at_end', $e);
+        $tasks_query->setFetchMode(PDO::FETCH_OBJ);
+        $tasks_query->execute();
+        $count =  $tasks_query->fetch();
+        if ($count->t) {
+            return intval($count->t);
+        } else {
+            return 0;
+        }
+
+        unset($conn);
+    } catch (PDOException $err) {
+        return [];
+    };
+}
+
+function start_and_end_for_tasks_completed_today($day) {
+
+    $today =  DateTime::createFromFormat('Y-m-d', $day);
+    $tomorrow =  DateTime::createFromFormat('Y-m-d', $day);
+    $yesterday =  DateTime::createFromFormat('Y-m-d', $day);
+
+    $tomorrow   = $tomorrow->modify('+1 day');
+    $yesterday   = $yesterday->modify('-1 day');
+
+    $hour =  date('H');
+
+    // get times from 3am to 3am 
+    if ($hour < 3) {
+        $s = $yesterday->format('Y-m-d') .  ' 03:00:00';
+        $e = $today->format('Y-m-d') .  ' 02:59:59';
+    } else {
+        $s = $today->format('Y-m-d') .  ' 03:00:00';
+        $e = $tomorrow->format('Y-m-d') .  ' 02:59:59';
+    }
+
+
+    return array($s, $e);
+}
+
+
 
 function get_tasks_completed_today() {
     global $conn;
 
-    $hour =  date('H');
     $today = date("Y-m-d");
-    $tm = new DateTime('tomorrow');
-    $tomorrow = $tm->format('Y-m-d ');
-    $ys = new DateTime('yesterday');
-    $yesterday = $ys->format('Y-m-d');
-    // get times from 3am to 3am 
-    if ($hour < 3) {
-        $completed_at_start = $yesterday .  ' 03:00:00';
-        $completed_at_end = $today .  ' 02:59:59';
-    } else {
-        $completed_at_start = $today .  ' 03:00:00';
-        $completed_at_end = $tomorrow .  ' 02:59:59';
-    }
-
+    $s_a_e = start_and_end_for_tasks_completed_today($today);
+    $s = $s_a_e[0];
+    $e = $s_a_e[1];
 
     $query = "SELECT *  FROM tasks
         WHERE completed_at > :completed_at_start  
@@ -126,8 +187,8 @@ function get_tasks_completed_today() {
 
     try {
         $tasks_query = $conn->prepare($query);
-        $tasks_query->bindParam(':completed_at_start', $completed_at_start);
-        $tasks_query->bindParam(':completed_at_end', $completed_at_end);
+        $tasks_query->bindParam(':completed_at_start', $s);
+        $tasks_query->bindParam(':completed_at_end', $e);
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
         $tasks_count = $tasks_query->rowCount();

@@ -127,6 +127,13 @@ if (isset($_GET['route'])) {
         }
     } // end of if route is clients
 
+    if ($route == 'monthly_stats') {
+        include('routes/monthly_stats/index.php');
+    } // end of if route is monthly_stats
+
+
+
+
 
 
 } else {
