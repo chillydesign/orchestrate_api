@@ -61,7 +61,7 @@ function get_projects($opts = null) {
         $status_sql
         $client_id_sql
         $cur_sql
-        ORDER BY projects.status ASC,  projects.incomplete_tasks_count DESC, projects.updated_at DESC
+        ORDER BY projects.updated_at DESC , projects.status ASC,  projects.incomplete_tasks_count DESC
         LIMIT :limit OFFSET :offset ";
 
         $projects_query = $conn->prepare($query);
