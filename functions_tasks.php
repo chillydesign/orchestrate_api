@@ -102,9 +102,21 @@ function get_random_incomplete_tasks($project_id, $limit) {
 function get_tasks_completed_today() {
     global $conn;
 
+    $hour =  date('H');
     $today = date("Y-m-d");
-    $completed_at_start = $today .  ' 00:00:00';
-    $completed_at_end = $today .  ' 23:59:59';
+    $tm = new DateTime('tomorrow');
+    $tomorrow = $tm->format('Y-m-d ');
+    $ys = new DateTime('yesterday');
+    $yesterday = $ys->format('Y-m-d');
+    // get times from 3am to 3am 
+    if ($hour < 3) {
+        $completed_at_start = $yesterday .  ' 03:00:00';
+        $completed_at_end = $today .  ' 02:59:59';
+    } else {
+        $completed_at_start = $today .  ' 03:00:00';
+        $completed_at_end = $tomorrow .  ' 02:59:59';
+    }
+
 
     $query = "SELECT *  FROM tasks
         WHERE completed_at > :completed_at_start  
