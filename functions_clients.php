@@ -160,6 +160,19 @@ function touch_client($client_id) {
     }
 }
 
+
+
+function touch_client_from_project_id($project_id) {
+    $project = get_project($project_id);
+    if ($project) {
+        if ($project->client_id) {
+            touch_client($project->client_id);
+        }
+    }
+}
+
+
+
 function processClient($client) {
 
     $client->id =  intval($client->id);

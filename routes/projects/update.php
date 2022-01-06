@@ -16,6 +16,8 @@ if (!empty($data->attributes)) {
 
         touch_project($new_project_id); // update the new task counts
         touch_project($id); // update the new task counts
+
+
     }
 
     if ($updated) {

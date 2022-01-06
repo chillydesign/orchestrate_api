@@ -242,6 +242,7 @@ function touch_all_projects() {
 }
 
 
+
 // change the updated_at date
 function touch_project($project_id) {
     global $conn;
@@ -262,6 +263,8 @@ function touch_project($project_id) {
             $project_query->bindParam(':id', $project_id);
             $project_query->execute();
             unset($conn);
+
+            touch_client_from_project_id($project_id);
             return true;
         } catch (PDOException $err) {
             return false;
