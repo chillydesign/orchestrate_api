@@ -26,8 +26,15 @@ function get_tasks($opts) {
         $com_sql = 'AND completed = :completed ';
     }
 
+    $cli_sql = '';
+    $left_join_sql = '';
+    if (isset($opts['client_id'])) {
+        $left_join_sql =  'LEFT JOIN projects ON projects.id = tasks.project_id';
+        $cli_sql = '  AND projects.client_id = :client_id ';
+    }
+
     // tasks.completed ASC,
-    $query = "SELECT *  FROM tasks  WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql ORDER BY   tasks.ordering ASC, tasks.created_at ASC";
+    $query = "SELECT tasks.*  FROM tasks $left_join_sql   WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql  ORDER BY    tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
@@ -42,6 +49,10 @@ function get_tasks($opts) {
         if (isset($opts['assignee_id'])) {
             $tasks_query->bindParam(':assignee_id', $opts['assignee_id'],  PDO::PARAM_INT);
         }
+        if (isset($opts['client_id'])) {
+            $tasks_query->bindParam(':client_id', $opts['client_id'],  PDO::PARAM_INT);
+        }
+
 
 
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
