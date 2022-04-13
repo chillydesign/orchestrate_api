@@ -13,7 +13,7 @@ $include_tasks = isset($_GET['include_tasks']) ? $_GET['include_tasks'] : null;
 $assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
 
 if ($client_id) {
-    $status = 'all';
+    // $status = 'all';
     $limit = 100000;
 }
 
@@ -60,7 +60,7 @@ foreach ($projects as $project) {
         $project->tasks = get_tasks(
             array(
                 'project_id' => $project->id,
-                'completed' => 0
+                // 'completed' => 0
             )
         );
     }

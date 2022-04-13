@@ -51,6 +51,10 @@ function get_client($client_id = null) {
         return null;
     }
 }
+
+
+
+
 function get_client_from_slug($slug = null) {
     global $conn;
     if ($slug != null) {

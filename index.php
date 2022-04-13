@@ -3,9 +3,11 @@
 ini_set('default_charset', 'UTF-8');
 header('Content-Type: application/json;charset=UTF-8');
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: *');
-header('Access-Control-Allow-Methods: *');
+
+// might need to turn this off for localhsot
+// header('Access-Control-Allow-Origin: *');
+// header('Access-Control-Allow-Headers: *');
+// header('Access-Control-Allow-Methods: *');
 
 
 

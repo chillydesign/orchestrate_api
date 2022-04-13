@@ -1,18 +1,13 @@
 <?php
 
 
-function get_uploads($project_id)
-{
+function get_uploads($project_id) {
     global $conn;
-
     if ($project_id !== null) {
-
         $query = "SELECT *  FROM uploads
         WHERE project_id = :project_id 
         ORDER BY  uploads.created_at ASC";
-
         try {
-
             $uploads_query = $conn->prepare($query);
             $uploads_query->bindParam(':project_id', $project_id);
             $uploads_query->setFetchMode(PDO::FETCH_OBJ);
@@ -35,8 +30,36 @@ function get_uploads($project_id)
 }
 
 
-function get_upload($upload_id = null)
-{
+
+function get_uploads_of_task($task_id) {
+    global $conn;
+    if ($task_id !== null) {
+        $query = "SELECT *  FROM uploads
+        WHERE task_id = :task_id 
+        ORDER BY  uploads.created_at ASC";
+        try {
+            $uploads_query = $conn->prepare($query);
+            $uploads_query->bindParam(':task_id', $task_id);
+            $uploads_query->setFetchMode(PDO::FETCH_OBJ);
+            $uploads_query->execute();
+            $uploads_count = $uploads_query->rowCount();
+
+            if ($uploads_count > 0) {
+                $uploads =  $uploads_query->fetchAll();
+                $uploads = processUploads($uploads);
+            } else {
+                $uploads =  [];
+            }
+
+            unset($conn);
+            return $uploads;
+        } catch (PDOException $err) {
+            return [];
+        };
+    }
+}
+
+function get_upload($upload_id = null) {
     global $conn;
     if ($upload_id != null) {
 
@@ -68,8 +91,7 @@ function get_upload($upload_id = null)
 
 
 
-function create_upload($upload)
-{
+function create_upload($upload) {
     global $conn;
     if (!empty($upload->project_id)  && !empty($upload->file_contents)) {
 
@@ -120,8 +142,7 @@ function create_upload($upload)
 
 
 
-function update_upload($upload_id, $upload)
-{
+function update_upload($upload_id, $upload) {
     global $conn;
     if ($upload_id > 0) {
         try {
@@ -148,8 +169,7 @@ function update_upload($upload_id, $upload)
 }
 
 
-function delete_upload($upload_id)
-{
+function delete_upload($upload_id) {
 
     // TODO NEED TO ACTUALLY REMOVE THE FILE FROM THE SERVER
 
@@ -179,8 +199,7 @@ function delete_upload($upload_id)
 /*
 to take mime type as a parameter and return the equivalent extension
 */
-function mime2ext($mime)
-{
+function mime2ext($mime) {
     $all_mimes = '{"png":["image\/png","image\/x-png"],"bmp":["image\/bmp","image\/x-bmp",
     "image\/x-bitmap","image\/x-xbitmap","image\/x-win-bitmap","image\/x-windows-bmp",
     "image\/ms-bmp","image\/x-ms-bmp","application\/bmp","application\/x-bmp",
@@ -234,8 +253,7 @@ function mime2ext($mime)
 }
 
 
-function processUpload($upload)
-{
+function processUpload($upload) {
     // if database is set as 1 it should return as true
     $upload->url = UPLOADDIR . $upload->id . '/' . $upload->filename;
     $upload->project_id =  intval($upload->project_id);
@@ -245,8 +263,7 @@ function processUpload($upload)
 }
 
 
-function processUploads($uploads)
-{
+function processUploads($uploads) {
 
     foreach ($uploads as $upload) {
         processUpload($upload);

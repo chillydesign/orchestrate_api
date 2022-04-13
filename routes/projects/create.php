@@ -13,6 +13,12 @@ if (!empty($data->attributes)) {
 
     if ($project_id) {
         $project = get_project($project_id);
+
+        if ($project->client_id) {
+            $project->client = get_client($project->client_id);
+        };
+
+
         http_response_code(201);
         echo json_encode($project);
     } else {

@@ -148,30 +148,6 @@ function delete_comment($comment_id) {
 
 
 
-function task_comment_count($task_id) {
-    global $conn;
-
-    if ($task_id !== null) {
-
-        $query = "SELECT 1  FROM comments
-        WHERE task_id = :task_id ";
-
-        try {
-
-            $comments_query = $conn->prepare($query);
-            $comments_query->bindParam(':task_id', $task_id);
-            $comments_query->setFetchMode(PDO::FETCH_OBJ);
-            $comments_query->execute();
-            $comments_count = $comments_query->rowCount();
-
-            unset($conn);
-            return $comments_count;
-        } catch (PDOException $err) {
-            return [];
-        };
-    }
-}
-
 
 
 

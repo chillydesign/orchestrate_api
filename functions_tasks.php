@@ -34,7 +34,9 @@ function get_tasks($opts) {
     }
 
     // tasks.completed ASC,
-    $query = "SELECT tasks.*  FROM tasks $left_join_sql   WHERE 1 = 1 $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql  ORDER BY    tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
+    $query = "SELECT tasks.*  FROM tasks $left_join_sql  
+     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql 
+     ORDER BY  tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
 
 
     try {
@@ -262,16 +264,21 @@ function create_task($task) {
         if (property_exists($task, 'translation') == false) {
             $task->translation = '';
         }
+        $is_public = 0;
+        if ($task->is_public) {
+            $is_public = 1;
+        };
 
         try {
             $query = "INSERT INTO tasks
-             (project_id, content, translation, ordering) VALUES 
-             (:project_id, :content, :translation, :ordering)";
+             (project_id, content, translation, ordering, is_public) VALUES 
+             (:project_id, :content, :translation, :ordering, :is_public)";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':project_id', $task->project_id);
             $task_query->bindParam(':content', $task->content);
             $task_query->bindParam(':translation', $task->translation);
             $task_query->bindParam(':ordering', $task->ordering);
+            $task_query->bindParam(':is_public', $is_public);
             $task_query->execute();
             $task_id = $conn->lastInsertId();
             unset($conn);
@@ -285,6 +292,54 @@ function create_task($task) {
     }
 }
 
+
+function task_comment_count($task_id) {
+    global $conn;
+
+    if ($task_id !== null) {
+
+        $query = "SELECT 1  FROM comments
+        WHERE task_id = :task_id ";
+
+        try {
+
+            $comments_query = $conn->prepare($query);
+            $comments_query->bindParam(':task_id', $task_id);
+            $comments_query->setFetchMode(PDO::FETCH_OBJ);
+            $comments_query->execute();
+            $comments_count = $comments_query->rowCount();
+
+            unset($conn);
+            return $comments_count;
+        } catch (PDOException $err) {
+            return [];
+        };
+    }
+}
+
+function task_upload_count($task_id) {
+    global $conn;
+
+    if ($task_id !== null) {
+
+        $query = "SELECT 1  FROM uploads
+        WHERE task_id = :task_id ";
+
+        try {
+
+            $comments_query = $conn->prepare($query);
+            $comments_query->bindParam(':task_id', $task_id);
+            $comments_query->setFetchMode(PDO::FETCH_OBJ);
+            $comments_query->execute();
+            $comments_count = $comments_query->rowCount();
+
+            unset($conn);
+            return $comments_count;
+        } catch (PDOException $err) {
+            return [];
+        };
+    }
+}
 
 
 function update_task_comment_count($task_id) {
@@ -315,6 +370,34 @@ function update_task_comment_count($task_id) {
     }
 }
 
+function update_task_uploads_count($task_id) {
+
+
+    global $conn;
+    if ($task_id > 0) {
+        // try {
+        $uploads_count = task_upload_count($task_id);
+        $updated_at =   updated_at_string();
+
+        $query = "UPDATE tasks SET 
+                `uploads_count` = :uploads_count, 
+                `updated_at` = :updated_at
+                WHERE id = :id";
+        $task_query = $conn->prepare($query);
+        $task_query->bindParam(':uploads_count', $uploads_count);
+        $task_query->bindParam(':updated_at', $updated_at);
+        $task_query->bindParam(':id', $task_id);
+        $task_query->execute();
+        unset($conn);
+        return true;
+        // } catch (PDOException $err) {
+        return false;
+        // };
+    } else { // task id was less than 0
+        return false;
+    }
+}
+
 
 
 function update_task($task_id, $task) {
@@ -325,12 +408,20 @@ function update_task($task_id, $task) {
             $completed = 0;
             $is_title = 0;
             $is_current = 0;
+            $is_public = 0;
+            $is_approved = 0;
             $assignee_id = 0;
             if ($task->is_title) {
                 $is_title = 1;
             };
             if ($task->is_current) {
                 $is_current = 1;
+            };
+            if ($task->is_public) {
+                $is_public = 1;
+            };
+            if ($task->is_approved) {
+                $is_approved = 1;
             };
             if ($task->assignee_id) {
                 $assignee_id = $task->assignee_id;
@@ -356,6 +447,8 @@ function update_task($task_id, $task) {
             `ordering` = :ordering, 
             `priority` = :priority, 
             `is_title` = :is_title, 
+            `is_approved` = :is_approved, 
+            `is_public` = :is_public, 
             `is_current` = :is_current, 
             `assignee_id` = :assignee_id, 
             `updated_at` = :updated_at,
@@ -370,6 +463,8 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':ordering',  $task->ordering);
             $task_query->bindParam(':is_title',  $is_title);
             $task_query->bindParam(':is_current',  $is_current);
+            $task_query->bindParam(':is_approved', $is_approved);
+            $task_query->bindParam(':is_public', $is_public);
             $task_query->bindParam(':assignee_id',  $assignee_id);
             $task_query->bindParam(':completed', $completed);
             $task_query->bindParam(':updated_at', $updated_at);
@@ -386,6 +481,7 @@ function update_task($task_id, $task) {
         return false;
     }
 }
+
 
 
 
@@ -417,6 +513,8 @@ function processTask($task) {
     $task->completed =  ($task->completed == '1' || $task->completed == 1);
     $task->is_title =  ($task->is_title == '1' || $task->is_title == 1);
     $task->is_current =  ($task->is_current == '1' || $task->is_current == 1);
+    $task->is_public =  ($task->is_public == '1' || $task->is_public == 1);
+    $task->is_approved =  ($task->is_approved == '1' || $task->is_approved == 1);
     $task->ordering =  intval($task->ordering);
     $task->indentation =  intval($task->indentation);
     $task->priority =  intval($task->priority);
@@ -424,6 +522,7 @@ function processTask($task) {
     $task->id =  intval($task->id);
     $task->project_id =  intval($task->project_id);
     $task->assignee_id =  intval($task->assignee_id);
+    $task->uploads_count =  intval($task->uploads_count);
     return $task;
 }
 
