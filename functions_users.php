@@ -152,6 +152,19 @@ function get_user_from_email($email) {
 }
 
 
+
+function get_user_emails() {
+    $users = get_users();
+
+    $emails = array();
+    foreach ($users as $user) {
+        if ($user->email) {
+            array_push($emails, $user->email);
+        }
+    }
+    return $emails;
+}
+
 function processUser($user) {
 
     unset($user->password_digest);

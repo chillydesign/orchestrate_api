@@ -2,6 +2,8 @@
 
 
 
+
+
 function get_projects($opts = null) {
     global $conn;
 
@@ -407,4 +409,32 @@ function processProjects($projects) {
     }
 
     return $projects;
+}
+
+
+
+function send_email_project_created($project) {
+
+
+    try {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isSMTP();                          // Set mailer to use SMTP
+        $mail->Host = 'smtp.gmail.com';           // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                   // Enable SMTP authentication
+        $mail->Username = MAIL_USERNAME;          // SMTP username
+        $mail->Password = MAIL_PASSWORD;          // SMTP password
+        $mail->SMTPSecure = 'tls';                // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;
+        $mail->Subject = 'A project was created on Orchestrate';
+        $mail->Body    = 'Go to the project. https://webfactor.ch/orchestrate/clients/' . $project->client->slug;
+        $user_emails =  get_user_emails();
+        foreach ($user_emails as $email_address) {
+            $mail->addAddress($email_address);
+        }
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return  "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
 }

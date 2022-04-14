@@ -12,11 +12,15 @@ if (!empty($data->attributes)) {
     $project_id = create_project($project_attributes);
 
     if ($project_id) {
+
+
         $project = get_project($project_id);
 
         if ($project->client_id) {
             $project->client = get_client($project->client_id);
         };
+
+        send_email_project_created($project);
 
 
         http_response_code(201);

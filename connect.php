@@ -1,6 +1,11 @@
 <?php
 
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+
 require_once('./vendor/autoload.php');
 
 error_reporting(E_ALL);
@@ -19,7 +24,8 @@ define("DB_PASSWORD",  getenv('DB_PASSWORD'));
 define("UPLOADDIR",  '/public/uploads/');
 define("FILELOC", dirname(__FILE__));
 
-
+define("MAIL_USERNAME", getenv('MAIL_USERNAME'));
+define("MAIL_PASSWORD", getenv('MAIL_PASSWORD'));
 
 define("JWT_SECRET", getenv('JWT_SECRET'));
 define("JWT_ALG", getenv('JWT_ALG'));
