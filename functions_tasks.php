@@ -111,11 +111,16 @@ function get_random_incomplete_tasks($project_id, $limit) {
 }
 
 
-function  last_30_days() {
+function  last_30_days($start_date_string) {
+    if ($start_date_string) {
+        $start_date     = new DateTime($start_date_string);
+        $end       = new DateTime($start_date_string);
+    } else {
+        $start_date     = new DateTime(); // today
+        $end       = new DateTime();
+    }
     $days = array();
-    $today     = new DateTime(); // today
-    $begin     = $today->sub(new DateInterval('P30D')); //created 30 days interval back
-    $end       = new DateTime();
+    $begin     = $start_date->sub(new DateInterval('P30D')); //created 30 days interval back
     $end       = $end->modify('+1 day'); // interval generates upto last day
     $interval  = new DateInterval('P1D'); // 1d interval range
     $daterange = new DatePeriod($begin, $interval, $end); // it always runs forwards in date

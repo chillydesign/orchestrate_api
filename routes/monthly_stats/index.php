@@ -1,7 +1,13 @@
 <?php
 
 
-$days = last_30_days();
+$start_date = (isset($_GET['start_date'])) ? $_GET['start_date'] : '';
+
+// var_dump($start_date);
+
+$days = last_30_days($start_date);
+// var_dump($days);
+
 
 $stats = array();
 
