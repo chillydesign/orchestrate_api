@@ -52,10 +52,10 @@ function get_projects($opts = null) {
 
 
     if (($current && $assignee_id) || $search_term) {
+        $cur_dist_sql = ' DISTINCT';
         $cur_join_sql = ' LEFT JOIN tasks ON tasks.project_id = projects.id ';
 
         if ($current && $assignee_id) {
-            $cur_dist_sql = ' DISTINCT';
             $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
         }
         if ($search_term) {
