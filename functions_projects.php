@@ -28,6 +28,9 @@ function get_projects($opts = null) {
     if (!isset($opts['assignee_id'])) {
         $opts['assignee_id'] = null;
     }
+    if (!isset($opts['search_term'])) {
+        $opts['search_term'] = null;
+    }
 
     $limit  = intval($opts['limit']);
     $offset = intval($opts['offset']);
@@ -35,6 +38,7 @@ function get_projects($opts = null) {
     $client_id = $opts['client_id'];
     $current = ($opts['current']);
     $assignee_id = ($opts['assignee_id']);
+    $search_term = $opts['search_term'];
 
     $client_id_sql = '';
     if ($client_id) {
@@ -44,10 +48,19 @@ function get_projects($opts = null) {
     $status_sql = '';
     $cur_join_sql = '';
     $cur_sql = '';
-    if ($current && $assignee_id) {
-        $cur_dist_sql = ' DISTINCT';
+    $sear_sql = '';
+
+
+    if (($current && $assignee_id) || $search_term) {
         $cur_join_sql = ' LEFT JOIN tasks ON tasks.project_id = projects.id ';
-        $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
+
+        if ($current && $assignee_id) {
+            $cur_dist_sql = ' DISTINCT';
+            $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
+        }
+        if ($search_term) {
+            $sear_sql = " AND  (tasks.content LIKE :search_term   OR projects.name LIKE :search_term  )   ";
+        }
     }
 
     if ($status) { {
@@ -63,14 +76,20 @@ function get_projects($opts = null) {
         $status_sql
         $client_id_sql
         $cur_sql
+        $sear_sql
         ORDER BY projects.updated_at DESC , projects.status ASC,  projects.incomplete_tasks_count DESC
         LIMIT :limit OFFSET :offset ";
 
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
+
         if ($client_id_sql != '') {
             $projects_query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
+        }
+        if ($search_term) {
+            $pst =  "%" . $search_term . "%";
+            $projects_query->bindParam(':search_term', $pst);
         }
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
