@@ -416,6 +416,8 @@ function processProject($project) {
     if ($project->client_id) {
         $project->client_id =  intval($project->client_id);
     }
+    $project->tasks_count =  intval($project->tasks_count);
+    $project->incomplete_tasks_count =  intval($project->incomplete_tasks_count);
     $project->id =  intval($project->id);
     return $project;
 }
