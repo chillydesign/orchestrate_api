@@ -9,7 +9,14 @@ if (!empty($data->attributes)) {
 
 
     $task_attributes = $data->attributes;
-    $updated = update_task($id, $task_attributes);
+
+    if (isset($_GET['single_field'])) {
+        $updated = update_task_field($id, $task_attributes->field, $task_attributes->data);
+
+    } else {
+        $updated = update_task($id, $task_attributes);
+
+    }
 
     if ($updated) {
         $task = get_task($id);
@@ -30,6 +37,3 @@ if (!empty($data->attributes)) {
     http_response_code(404);
     echo json_encode( 'Error'  );
 }
-
-
-?>

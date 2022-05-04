@@ -487,6 +487,44 @@ function update_task($task_id, $task) {
     }
 }
 
+function update_task_field($task_id, $field, $data) {
+    global $conn;
+    if ($task_id > 0) {
+        try {
+
+            if ($field == 'completed' || $field == 'is_title' || $field == 'is_current' || $field == 'is_public' || $field == 'is_approved' ||  $field == 'is_approved') {
+                if ($data == true) {
+                    $data = 1;
+                } else {
+                    $data = 0;
+                }
+            } else if ($field == 'time_taken') {
+                if ($data == null) {
+                    $data = 0;
+                }
+            }
+
+            $updated_at =   updated_at_string();
+            $query = "UPDATE tasks SET 
+            `" . $field . "` = :daata, 
+            `updated_at` = :updated_at
+            WHERE id = :id";
+            $task_query = $conn->prepare($query);
+            $task_query->bindParam(':daata', $data);
+            $task_query->bindParam(':updated_at', $updated_at);
+            $task_query->bindParam(':id', $task_id);
+            $task_query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+            var_dump($err);
+            return false;
+        };
+    } else { // task name was blank
+        return false;
+    }
+}
+
 
 
 
