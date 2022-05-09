@@ -504,10 +504,27 @@ function update_task_field($task_id, $field, $data) {
                 }
             }
 
+            $ca_sql = '';
+            if ($field == 'completed') {
+                if ($data == 1) {
+                    $task = get_task($task_id);
+                    if ($task->completed_at) {
+                    } else {
+                        $now = updated_at_string();
+
+                        $ca_sql = ",  completed_at = '$now' ";
+                    }
+                } else {
+                    $ca_sql = ",  completed_at =  NULL ";
+                }
+            }
+
+
             $updated_at =   updated_at_string();
             $query = "UPDATE tasks SET 
             `" . $field . "` = :daata, 
             `updated_at` = :updated_at
+            $ca_sql
             WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':daata', $data);
@@ -549,6 +566,9 @@ function delete_task($task_id) {
         return false;
     }
 }
+
+
+
 
 
 function processTask($task) {
