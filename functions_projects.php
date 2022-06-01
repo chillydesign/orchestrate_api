@@ -265,7 +265,7 @@ function touch_all_projects() {
 
 
 // change the updated_at date
-function touch_project($project_id) {
+function touch_project($project_id, $change_updated_date = true) {
     global $conn;
     if ($project_id > 0) {
 
@@ -274,11 +274,20 @@ function touch_project($project_id) {
         $total = $tasks_count->total;
         $incomplete = $tasks_count->incomplete;
 
+        $cud = '';
+        if ($change_updated_date) {
+            $cud  = " `updated_at` = :updated_at, ";
+        }
+
+
+
         try {
             $updated_at = updated_at_string();
-            $query = "UPDATE projects SET `updated_at` = :updated_at, `tasks_count` = :total, `incomplete_tasks_count` = :incomplete WHERE id = :id";
+            $query = "UPDATE projects SET  $cud `tasks_count` = :total, `incomplete_tasks_count` = :incomplete WHERE id = :id";
             $project_query = $conn->prepare($query);
-            $project_query->bindParam(':updated_at', $updated_at);
+            if ($change_updated_date) {
+                $project_query->bindParam(':updated_at', $updated_at);
+            }
             $project_query->bindParam(':total', $total);
             $project_query->bindParam(':incomplete', $incomplete);
             $project_query->bindParam(':id', $project_id);
