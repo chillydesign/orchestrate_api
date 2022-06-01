@@ -19,7 +19,10 @@ function get_tasks($opts) {
         $ass_sql =  ' AND assignee_id = :assignee_id ';
     }
 
-
+    $sear_sql = '';
+    if (isset($opts['search_term'])) {
+        $sear_sql = " AND  (content LIKE :search_term OR translation LIKE :search_term  )   ";
+    }
 
     $com_sql = '';
     if (isset($opts['completed'])) {
@@ -35,7 +38,7 @@ function get_tasks($opts) {
 
     // tasks.completed ASC,
     $query = "SELECT tasks.*  FROM tasks $left_join_sql  
-     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql 
+     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql    $sear_sql 
      ORDER BY  tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
 
 
@@ -55,6 +58,11 @@ function get_tasks($opts) {
             $tasks_query->bindParam(':client_id', $opts['client_id'],  PDO::PARAM_INT);
         }
 
+
+        if (isset($opts['search_term'])) {
+            $pst =  "%" . $opts['search_term'] . "%";
+            $tasks_query->bindParam(':search_term', $pst);
+        }
 
 
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);

@@ -10,6 +10,9 @@ if (isset($_GET['is_current'])) {
 if (isset($_GET['client_id'])) {
     $opts['client_id'] = $_GET['client_id'];
 }
+if (isset($_GET['search_term'])) {
+    $opts['search_term'] = $_GET['search_term'];
+}
 
 
 
