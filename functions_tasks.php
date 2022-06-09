@@ -468,6 +468,7 @@ function update_task($task_id, $task) {
             `completed_at` = :completed_at ,
             `time_taken` = :time_taken 
             WHERE id = :id";
+
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':content', $task->content);
             $task_query->bindParam(':translation', $task->translation);

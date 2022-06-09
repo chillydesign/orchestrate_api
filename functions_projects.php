@@ -71,7 +71,8 @@ function get_projects($opts = null) {
     }
 
     try {
-        $query = "SELECT  $cur_dist_sql projects.*  FROM projects $cur_join_sql
+        $query = "SELECT  $cur_dist_sql projects.* , clients.slug as client_slug  FROM projects $cur_join_sql
+         LEFT JOIN clients ON  clients.id = projects.client_id
         WHERE 1 = 1
         $status_sql
         $client_id_sql
@@ -80,6 +81,8 @@ function get_projects($opts = null) {
         ORDER BY projects.updated_at DESC , projects.status ASC,  projects.incomplete_tasks_count DESC
         LIMIT :limit OFFSET :offset ";
 
+
+        echo $query;
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
