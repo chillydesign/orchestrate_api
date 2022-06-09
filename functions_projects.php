@@ -82,7 +82,6 @@ function get_projects($opts = null) {
         LIMIT :limit OFFSET :offset ";
 
 
-        echo $query;
         $projects_query = $conn->prepare($query);
         $projects_query->bindParam(':limit', $limit, PDO::PARAM_INT);
         $projects_query->bindParam(':offset', $offset, PDO::PARAM_INT);
