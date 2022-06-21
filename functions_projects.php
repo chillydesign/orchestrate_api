@@ -459,7 +459,7 @@ function send_email_project_created($project) {
         $mail->SMTPSecure = 'tls';                // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 587;
         $mail->Subject = 'A project was created on Orchestrate';
-        if ($project->client) {
+        if (property_exists($project, 'client')) {
             $body = 'Go to the project. https://webfactor.ch/orchestrate/clients/' . $project->client->slug;
         } else {
             $body = 'Go to the project. https://webfactor.ch/orchestrate/projects/' . $project->id;
