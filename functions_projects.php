@@ -404,7 +404,7 @@ if (!function_exists('api_save_csv_string')) {
 }
 
 
-function show_project_as_csv($json) {
+function show_project_as_csv($json, $show_header = true) {
 
     $csv_array = [];
     $csv_header = array(
@@ -418,7 +418,10 @@ function show_project_as_csv($json) {
         "Created at",
         "Updated at",
     );
-    array_push($csv_array,   implode(',', $csv_header));
+
+    if ($show_header) {
+        array_push($csv_array,   implode(',', $csv_header));
+    }
 
     if (property_exists($json, 'client')) {
         $client_name = $json->client->name;

@@ -94,10 +94,13 @@ foreach ($projects as $project) {
 if ($show_csv) {
 
     $data = array();
+    $i =  0;
     foreach ($projects as $project) {
-        $d =  show_project_as_csv($project);
+        $show_header = $i == 0;
+        $d =  show_project_as_csv($project, $show_header);
         array_push($data, $d);
         array_push($data, "\n");
+        $i++;
     }
 
     $data = implode("\n", $data);
