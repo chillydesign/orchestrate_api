@@ -410,10 +410,11 @@ function show_project_as_csv($json) {
     $csv_header = array(
         "Client",
         "Project",
+        "Completed at month",
         "Minutes",
-        "Completed at",
         "Task",
         "Translation",
+        "Completed at",
         "Created at",
         "Updated at",
     );
@@ -428,13 +429,17 @@ function show_project_as_csv($json) {
 
 
     foreach ($json->tasks as $task) {
+
+
+        $completed_at_month = month_of_date($task->completed_at);
         $csv_row = [
             $client_name,
             $json->name,
+            $completed_at_month,
             $task->time_taken,
-            $task->completed_at,
             api_save_csv_string($task->content),
             api_save_csv_string($task->translation),
+            $task->completed_at,
             $task->created_at,
             $task->updated_at,
         ];
@@ -444,6 +449,13 @@ function show_project_as_csv($json) {
     return $csv_string;
 }
 
+
+function month_of_date($date) {
+    if ($date) {
+        return  date('Y-m', strtotime($date));
+    }
+    return '-';
+}
 
 
 function processProject($project) {
