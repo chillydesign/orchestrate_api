@@ -12,13 +12,35 @@ $current = isset($_GET['current']) ? $_GET['current'] : null;
 $search_term = isset($_GET['search_term']) ? $_GET['search_term'] : null;
 $include_tasks = isset($_GET['include_tasks']) ? $_GET['include_tasks'] : null;
 $assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
+$project_id = isset($_GET['project_id']) ? $_GET['project_id'] : null;
+
+
+
+$show_csv = false;
+if (isset($_GET['format'])) {
+    $format = $_GET['format'];
+    if ($format === 'csv') {
+        $show_csv = true;
+    }
+}
+
+
+
+
+
 
 if ($client_id) {
     // $status = 'all';
     $limit = 100000;
 }
 
+
+
+
+
+
 $projects = get_projects(array(
+    'project_id' => $project_id,
     'limit' => $limit,
     'offset' => $offset,
     'status' => $status,
@@ -58,7 +80,7 @@ foreach ($projects as $project) {
             )
         );
         addUsersToTasks($project->tasks);
-    } else if ($include_tasks) {
+    } else if ($include_tasks || $show_csv) {
         $project->tasks = get_tasks(
             array(
                 'project_id' => $project->id,
@@ -69,4 +91,18 @@ foreach ($projects as $project) {
 }
 
 
-echo json_encode($projects);
+if ($show_csv) {
+
+    $data = array();
+    foreach ($projects as $project) {
+        $d =  show_project_as_csv($project);
+        array_push($data, $d);
+        array_push($data, "\n");
+    }
+
+    $data = implode("\n", $data);
+    $csv = (object) ['csv' => $data];
+    echo json_encode($csv);
+} else {
+    echo json_encode($projects);
+}

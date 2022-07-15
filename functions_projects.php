@@ -31,7 +31,11 @@ function get_projects($opts = null) {
     if (!isset($opts['search_term'])) {
         $opts['search_term'] = null;
     }
+    if (!isset($opts['project_id'])) {
+        $opts['project_id'] = null;
+    }
 
+    $project_id  = ($opts['project_id']);
     $limit  = intval($opts['limit']);
     $offset = intval($opts['offset']);
     $status = $opts['status'];
@@ -49,6 +53,12 @@ function get_projects($opts = null) {
     $cur_join_sql = '';
     $cur_sql = '';
     $sear_sql = '';
+
+
+    $project_id_sql = '';
+    if ($project_id) {
+        $project_id_sql = '  AND projects.id = :project_id';
+    }
 
 
     if (($current && $assignee_id) || $search_term) {
@@ -78,6 +88,7 @@ function get_projects($opts = null) {
         $client_id_sql
         $cur_sql
         $sear_sql
+        $project_id_sql
         ORDER BY projects.updated_at DESC , projects.status ASC,  projects.incomplete_tasks_count DESC
         LIMIT :limit OFFSET :offset ";
 
@@ -88,6 +99,9 @@ function get_projects($opts = null) {
 
         if ($client_id_sql != '') {
             $projects_query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
+        }
+        if ($project_id_sql != '') {
+            $projects_query->bindParam(':project_id', $project_id, PDO::PARAM_INT);
         }
         if ($search_term) {
             $pst =  "%" . $search_term . "%";
@@ -394,6 +408,8 @@ function show_project_as_csv($json) {
 
     $csv_array = [];
     $csv_header = array(
+        "Client",
+        "Project",
         "Task",
         "Translation",
         "Minutes",
@@ -404,9 +420,18 @@ function show_project_as_csv($json) {
     );
     array_push($csv_array,   implode(',', $csv_header));
 
+    if (property_exists($json, 'client')) {
+        $client_name = $json->client->name;
+    } else {
+        $client_name = $json->client_id;
+    }
+
+
 
     foreach ($json->tasks as $task) {
         $csv_row = [
+            $client_name,
+            $json->name,
             api_save_csv_string($task->content),
             api_save_csv_string($task->translation),
             $task->time_taken,
