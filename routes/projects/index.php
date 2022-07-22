@@ -21,6 +21,7 @@ if (isset($_GET['format'])) {
     $format = $_GET['format'];
     if ($format === 'csv') {
         $show_csv = true;
+        $status = 'all';
     }
 }
 
