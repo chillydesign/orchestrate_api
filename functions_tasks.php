@@ -297,7 +297,7 @@ function create_task($task) {
             unset($conn);
             return ($task_id);
         } catch (PDOException $err) {
-            var_dump($err);
+            // var_dump($err);
             return false;
         };
     } else { // task project_id was blank
@@ -543,7 +543,7 @@ function update_task_field($task_id, $field, $data) {
             unset($conn);
             return true;
         } catch (PDOException $err) {
-            var_dump($err);
+            // var_dump($err);
             return false;
         };
     } else { // task name was blank

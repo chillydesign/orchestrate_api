@@ -134,7 +134,7 @@ function update_client($client_id, $client) {
 
             return true;
         } catch (PDOException $err) {
-            var_dump($err);
+            // var_dump($err);
             return false;
         };
     } else { // client name was blank
