@@ -105,7 +105,7 @@ function create_upload($upload) {
             $decoded_file = base64_decode($filedata[1]); // remove the mimetype from the base 64 string
 
 
-            $filename =  preg_replace('/[^a-z0-9]+/', '-', strtolower($upload->filename));
+            $filename =  preg_replace('/[^a-z0-9\.]+/', '-', strtolower($upload->filename));
 
             $mime_type = finfo_buffer(finfo_open(), $decoded_file, FILEINFO_MIME_TYPE); // extract mime type
             $extension = mime2ext($mime_type); // extract extension from mime type
