@@ -2,6 +2,7 @@
 
 
 
+$current_user = get_current_user_from_jwt();
 
 
 $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
@@ -82,12 +83,16 @@ foreach ($projects as $project) {
         );
         addUsersToTasks($project->tasks);
     } else if ($include_tasks || $show_csv) {
-        $project->tasks = get_tasks(
-            array(
-                'project_id' => $project->id,
-                // 'completed' => 0
-            )
+
+
+        $task_opts =  array(
+            'project_id' => $project->id,
+            // 'completed' => 0
         );
+        if (!$current_user) {
+            $task_opts['is_public'] = true;
+        }
+        $project->tasks = get_tasks($task_opts);
     }
 }
 

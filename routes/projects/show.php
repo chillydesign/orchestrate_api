@@ -10,7 +10,15 @@ $id = $_GET['id'];
 
 $project = get_project($id);
 if ($project) {
-    $tasks = get_tasks(array('project_id' => $id));
+
+    $task_opts = array('project_id' => $id);
+
+    $current_user = get_current_user_from_jwt();
+    if (!$current_user) {
+        $task_opts['is_public'] = true;
+    }
+    $tasks = get_tasks($task_opts);
+
     addUsersToTasks($tasks);
 
     $uploads = get_uploads($id);

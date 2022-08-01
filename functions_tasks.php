@@ -14,6 +14,14 @@ function get_tasks($opts) {
     if (isset($opts['is_current'])) {
         $cur_sql =  ' AND is_current = 1 ';
     }
+
+    $pub_sql = '';
+    if (isset($opts['is_public'])) {
+        if ($opts['is_public'] == true) {
+            $pub_sql =  " AND is_public = 1";
+        }
+    }
+
     $ass_sql = '';
     if (isset($opts['assignee_id'])) {
         $ass_sql =  ' AND assignee_id = :assignee_id ';
@@ -38,8 +46,9 @@ function get_tasks($opts) {
 
     // tasks.completed ASC,
     $query = "SELECT tasks.*  FROM tasks $left_join_sql  
-     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql   $cli_sql    $sear_sql 
+     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql $pub_sql   $cli_sql    $sear_sql 
      ORDER BY  tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
+
 
 
     try {
