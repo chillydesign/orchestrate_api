@@ -16,7 +16,7 @@ if (isset($_GET['search_term'])) {
 
 $current_user = get_current_user_from_jwt();
 if (!$current_user) {
-    $opts['is_public'] = false;
+    $opts['is_public'] = true;
 }
 
 
