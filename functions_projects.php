@@ -89,7 +89,7 @@ function get_projects($opts = null) {
         $cur_sql
         $sear_sql
         $project_id_sql
-        ORDER BY projects.name ASC
+        ORDER BY projects.name ASC, projects.month DESC
         LIMIT :limit OFFSET :offset ";
 
         // ORDER BY projects.updated_at DESC , projects.status ASC,  projects.incomplete_tasks_count DESC
