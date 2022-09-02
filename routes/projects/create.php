@@ -20,7 +20,11 @@ if (!empty($data->attributes)) {
             $project->client = get_client($project->client_id);
         };
 
-        send_email_project_created($project);
+        $current_user = get_current_user_from_jwt();
+        if (!$current_user) {
+            send_email_project_created($project);
+        }
+
 
 
         http_response_code(201);
