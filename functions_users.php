@@ -90,7 +90,7 @@ function generate_jwt_token($user_id, $remember_me) {
     $secretKey  = JWT_SECRET;
     $issuedAt   = new DateTimeImmutable();
     if ($remember_me) {
-        $time =  '+10080 minutes'; // seven days
+        $time =  '+30240 minutes'; // 21 days
     } else {
         $time = '+1440 minutes'; // one days
     }
@@ -175,6 +175,7 @@ function processUser($user) {
 
     unset($user->password_digest);
     $user->id =  intval($user->id);
+    $user->dark_mode =  ($user->dark_mode == 1);
     return $user;
 }
 
