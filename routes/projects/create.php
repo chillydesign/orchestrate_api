@@ -21,7 +21,7 @@ if (!empty($data->attributes)) {
         };
 
         $current_user = get_current_user_from_jwt();
-        if (!$current_user) {
+        if ($current_user == null) {
             send_email_project_created($project);
         }
 
