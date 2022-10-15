@@ -40,6 +40,44 @@ if (isset($_GET['route'])) {
     } // end of if route is projects
 
 
+    if ($route == 'channels') {
+        if (isset($_GET['id'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                include('routes/channels/delete.php');
+            } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+                include('routes/channels/update.php');
+            } else {
+                include('routes/channels/show.php');
+            }
+        } else 
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            include('routes/channels/create.php');
+        } else {
+            include('routes/channels/index.php');
+        }
+    } // end of if route is channels
+
+
+
+    if ($route == 'messages') {
+        if (isset($_GET['id'])) {
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                include('routes/messages/delete.php');
+            } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+                include('routes/messages/update.php');
+            } else {
+                include('routes/messages/show.php');
+            }
+        } else 
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            include('routes/messages/create.php');
+        } else {
+            include('routes/messages/index.php');
+        }
+    } // end of if route is messages
+
+
+
     if ($route == 'tasks') {
         if (isset($_GET['id'])) {
             if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {

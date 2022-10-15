@@ -12,3 +12,5 @@ include('functions_uploads.php');
 include('functions_comments.php');
 include('functions_users.php');
 include('functions_clients.php');
+include('functions_channels.php');
+include('functions_messages.php');
