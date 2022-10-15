@@ -25,7 +25,6 @@ if ($project) {
 
     $project->tasks = $tasks;
     $project->uploads = $uploads;
-    $project->id = intval($project->id);
     $project->client = get_client($project->client_id);
 
 
