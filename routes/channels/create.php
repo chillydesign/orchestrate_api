@@ -13,8 +13,22 @@ if (!empty($data->attributes)) {
 
     if ($channel_id) {
 
-
         $channel = get_channel($channel_id);
+
+        // todo make this list of users appropriate for the channel, client, project, etc
+
+        if ($channel->client_id) {
+            $users = get_users_of_client($channel->client_id);
+        } else {
+            $users = get_users();
+        }
+        add_users_to_channel($channel_id, $users);
+
+
+        $admins = get_users(array(['admin' => true]));
+        add_users_to_channel($channel_id, $admins);
+
+
 
         if ($channel->client_id) {
             $channel->client = get_client($channel->client_id);

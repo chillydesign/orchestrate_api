@@ -16,12 +16,20 @@ function password_is_correct($password, $encrypted) {
 }
 
 
-function get_users() {
+function get_users($opts = null) {
     global $conn;
 
 
+    $admin_sql = '';
+    if ($opts) {
+        if ($opts['admin']) {
+            $admin_sql = ' WHERE role = "admin"';
+        }
+    }
+
+
     try {
-        $query = "SELECT  *  FROM users  ORDER BY users.name ASC ";
+        $query = "SELECT  *  FROM users WHERE 1=1 $admin_sql  ORDER BY users.name ASC ";
         $users_query = $conn->prepare($query);
         $users_query->setFetchMode(PDO::FETCH_OBJ);
         $users_query->execute();
@@ -39,6 +47,33 @@ function get_users() {
     };
 }
 
+
+
+
+function get_users_of_client($client_id) {
+    global $conn;
+    try {
+        $query = "SELECT  users.*  FROM users
+         LEFT JOIN clients_users ON clients_users.user_id = users.id  
+         WHERE clients_users.client_id = :client_id
+         ORDER BY users.name ASC ";
+        $users_query = $conn->prepare($query);
+        $users_query->bindParam(':client_id', $client_id);
+        $users_query->setFetchMode(PDO::FETCH_OBJ);
+        $users_query->execute();
+        $users_count = $users_query->rowCount();
+        if ($users_count > 0) {
+            $users =  $users_query->fetchAll();
+            $users = processUsers($users);
+        } else {
+            $users =  [];
+        }
+        unset($conn);
+        return $users;
+    } catch (PDOException $err) {
+        return [];
+    };
+}
 
 
 function get_user($user_id = null) {
@@ -107,8 +142,10 @@ function generate_jwt_token($user_id, $remember_me) {
     return JWT::encode($data,  $secretKey,  JWT_ALG);
 }
 
-function get_current_user_from_jwt() {
-    $current_user = null;
+
+
+function get_current_user_id_from_jwt() {
+    $current_user_id = null;
     $jwt_token = get_token_from_headers();
     if ($jwt_token) {
         try {
@@ -123,12 +160,23 @@ function get_current_user_from_jwt() {
             ) {
                 //
             } else {
-                $current_user = get_user($token->user_id);
+                $current_user_id = $token->user_id;
             }
         } catch (Exception $e) {
         }
     }
-    return $current_user;
+    return $current_user_id;
+}
+
+function get_current_user_from_jwt() {
+
+    $current_user_id = get_current_user_id_from_jwt();
+
+    if ($current_user_id) {
+        return get_user($current_user_id);
+    }
+
+    return null;
 }
 
 
@@ -170,6 +218,40 @@ function get_user_emails() {
     }
     return $emails;
 }
+
+
+// $user = new stdClass();
+// $user->name = 'Mary';
+// $user->password = 'marymary';
+// $user->email = 'mary@mary.mary';
+// $user->dark_mode = 0;
+// $user->role = 'user';
+// add_user($user);
+
+
+function add_user($user) {
+    global $conn;
+
+
+    $password_digest = encrypt_password(($user->password));
+
+    try {
+        $sql = "INSERT INTO users (email, password_digest, role, name, dark_mode ) VALUES (:email, :password_digest, :role, :name, :dark_mode)";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':email', $user->email);
+        $query->bindParam(':password_digest', $password_digest);
+        $query->bindParam(':role', $user->role);
+        $query->bindParam(':name', $user->name);
+        $query->bindParam(':dark_mode', $user->dark_mode);
+        $query->execute();
+        $last_insert_id = $conn->lastInsertId();
+        unset($conn);
+        return ($last_insert_id);
+    } catch (PDOException $err) {
+        echo json_encode($err->getMessage());
+    };
+}
+
 
 function processUser($user) {
 

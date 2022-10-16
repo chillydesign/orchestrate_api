@@ -6,7 +6,8 @@ function get_messages($channel_id) {
 
     if ($channel_id !== null) {
 
-        $query = "SELECT *  FROM messages
+        $query = "SELECT messages.*, users.name as user_name   FROM messages
+        LEFT JOIN users ON messages.user_id = users.id
         WHERE channel_id = :channel_id 
         ORDER BY  messages.created_at ASC";
 
@@ -39,7 +40,7 @@ function get_message($message_id = null) {
     if ($message_id != null) {
 
         try {
-            $query = "SELECT * FROM messages WHERE messages.id = :id LIMIT 1";
+            $query = "SELECT messages.*, users.name as user_name FROM messages   LEFT JOIN users ON messages.user_id = users.id WHERE messages.id = :id LIMIT 1";
             $message_query = $conn->prepare($query);
             $message_query->bindParam(':id', $message_id);
             $message_query->setFetchMode(PDO::FETCH_OBJ);

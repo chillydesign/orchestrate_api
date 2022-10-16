@@ -12,7 +12,9 @@ $channel = get_channel($id);
 if ($channel) {
 
 
+
     $channel->messages = get_messages($channel->id);
+
 
 
     if ($channel->client_id) {

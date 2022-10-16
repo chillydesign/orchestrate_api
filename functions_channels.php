@@ -10,8 +10,12 @@ function get_channels($opts = null) {
     if (!isset($opts['client_id'])) {
         $opts['client_id'] = null;
     }
+    if (!isset($opts['current_user_id'])) {
+        $opts['current_user_id'] = null;
+    }
 
     $client_id = $opts['client_id'];
+    $current_user_id = $opts['current_user_id'];
 
 
     $client_id_sql = '';
@@ -19,22 +23,35 @@ function get_channels($opts = null) {
         $client_id_sql = '  AND client_id = :client_id';
     }
 
+
+    $cur_us_sql = '';
+    $left_join_sql = '';
+    if ($current_user_id) {
+        $left_join_sql = ' LEFT JOIN channels_users ON  channels_users.channel_id = channels.id ';
+        $cur_us_sql = ' AND channels_users.user_id = :current_user_id  ';
+    }
+
     try {
-        $query = "SELECT * FROM channels 
+        $sql = "SELECT channels.* FROM channels 
+        $left_join_sql
         WHERE 1 = 1
         $client_id_sql
-
+        $cur_us_sql
         ORDER BY created_at DESC ";
 
-        $channels_query = $conn->prepare($query);
+
+        $query = $conn->prepare($sql);
         if ($client_id_sql != '') {
-            $channels_query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
+            $query->bindParam(':client_id', $client_id, PDO::PARAM_INT);
         }
-        $channels_query->setFetchMode(PDO::FETCH_OBJ);
-        $channels_query->execute();
-        $channels_count = $channels_query->rowCount();
+        if ($current_user_id != '') {
+            $query->bindParam(':current_user_id', $current_user_id, PDO::PARAM_INT);
+        }
+        $query->setFetchMode(PDO::FETCH_OBJ);
+        $query->execute();
+        $channels_count = $query->rowCount();
         if ($channels_count > 0) {
-            $channels =  $channels_query->fetchAll();
+            $channels =  $query->fetchAll();
             $channels = processChannels($channels);
         } else {
             $channels =  [];
@@ -43,6 +60,7 @@ function get_channels($opts = null) {
         unset($conn);
         return $channels;
     } catch (PDOException $err) {
+        // var_dump($err->getMessage());
         return [];
     };
 }
@@ -56,16 +74,14 @@ function get_channel($channel_id = null) {
 
 
         try {
-            $query = "SELECT * FROM channels WHERE channels.id = :id LIMIT 1";
-            $channel_query = $conn->prepare($query);
-            $channel_query->bindParam(':id', $channel_id);
-            $channel_query->setFetchMode(PDO::FETCH_OBJ);
-            $channel_query->execute();
-
-            $channel_count = $channel_query->rowCount();
-
-            if ($channel_count == 1) {
-                $channel =  $channel_query->fetch();
+            $sql = "SELECT * FROM channels WHERE channels.id = :id LIMIT 1";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':id', $channel_id);
+            $query->setFetchMode(PDO::FETCH_OBJ);
+            $query->execute();
+            $row_count = $query->rowCount();
+            if ($row_count == 1) {
+                $channel =  $query->fetch();
                 $channel = processChannel($channel);
             } else {
                 $channel =  null;
@@ -145,8 +161,28 @@ function update_channel($channel_id, $channel) {
 
 
 
+function add_users_to_channel($channel_id, $users) {
+    foreach ($users as $user) {
+        create_channel_user($channel_id, $user->id);
+    }
+}
 
 
+function create_channel_user($channel_id, $user_id) {
+    global $conn;
+    try {
+        $sql = "INSERT INTO channels_users (channel_id, user_id) VALUES (:channel_id, :user_id)";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':channel_id', $channel_id);
+        $query->bindParam(':user_id', $user_id);
+        $query->execute();
+        $last_insert_id = $conn->lastInsertId();
+        unset($conn);
+        return ($last_insert_id);
+    } catch (PDOException $err) {
+        return false;
+    };
+}
 
 
 
