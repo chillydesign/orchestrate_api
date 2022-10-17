@@ -22,7 +22,7 @@ function get_users($opts = null) {
 
     $admin_sql = '';
     if ($opts) {
-        if ($opts['admin']) {
+        if (isset($opts['admin'])) {
             $admin_sql = ' WHERE role = "admin"';
         }
     }
