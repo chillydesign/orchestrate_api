@@ -13,6 +13,15 @@ if (isset($_GET['client_id'])) {
 if (isset($_GET['search_term'])) {
     $opts['search_term'] = $_GET['search_term'];
 }
+if (isset($_GET['limit'])) {
+    $opts['limit'] = $_GET['limit'];
+}
+if (isset($_GET['order'])) {
+    $opts['order'] = $_GET['order'];
+}
+if (isset($_GET['completed'])) {
+    $opts['completed'] = $_GET['completed'];
+}
 
 $current_user = get_current_user_from_jwt();
 if (!$current_user) {

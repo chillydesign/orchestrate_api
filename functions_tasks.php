@@ -22,6 +22,18 @@ function get_tasks($opts) {
         }
     }
 
+    $ord_sql = 'ORDER BY  tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC';
+    if (isset($opts['order'])) {
+        if ($opts['order'] == 'created_at') {
+            $ord_sql = 'ORDER BY tasks.created_at DESC';
+        }
+    }
+
+    $lim_sql = '';
+    if (isset($opts['limit'])) {
+        $lim_sql = 'LIMIT :limit ';
+    }
+
     $ass_sql = '';
     if (isset($opts['assignee_id'])) {
         $ass_sql =  ' AND assignee_id = :assignee_id ';
@@ -37,6 +49,8 @@ function get_tasks($opts) {
         $com_sql = 'AND completed = :completed ';
     }
 
+
+
     $cli_sql = '';
     $left_join_sql = '';
     if (isset($opts['client_id'])) {
@@ -47,7 +61,7 @@ function get_tasks($opts) {
     // tasks.completed ASC,
     $query = "SELECT tasks.*  FROM tasks $left_join_sql  
      WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql $pub_sql   $cli_sql    $sear_sql 
-     ORDER BY  tasks.project_id DESC , tasks.ordering ASC, tasks.created_at ASC";
+     $ord_sql $lim_sql";
 
 
 
@@ -65,6 +79,9 @@ function get_tasks($opts) {
         }
         if (isset($opts['client_id'])) {
             $tasks_query->bindParam(':client_id', $opts['client_id'],  PDO::PARAM_INT);
+        }
+        if (isset($opts['limit'])) {
+            $tasks_query->bindParam(':limit', $opts['limit'],  PDO::PARAM_INT);
         }
 
 
