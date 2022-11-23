@@ -440,7 +440,7 @@ function show_project_as_csv($json, $show_header = true) {
         $completed_at_month = month_of_date($task->completed_at);
         $csv_row = [
             $client_name,
-            $json->name,
+            api_save_csv_string($json->name),
             $completed_at_month,
             $task->time_taken,
             api_save_csv_string($task->content),
