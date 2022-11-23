@@ -400,6 +400,7 @@ if (!function_exists('api_save_csv_string')) {
         $new_string = str_replace(array("\r", "\n"), ' | ', $new_string);
         $new_string = str_replace(';', ' ', $new_string);
         $new_string = str_replace(',', ' ', $new_string);
+        $new_string = str_replace('"', '~~', $new_string);
         $new_string = strip_tags($new_string);
         return $new_string;
     }
