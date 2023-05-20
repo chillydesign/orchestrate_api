@@ -2,8 +2,8 @@
     "name": "charles/orchestrate_api",
     "description": "API for orchestrate",
     "require": {
-        "firebase/php-jwt": "^5.4",
-        "hautelook/phpass": "^1.1",
+        "firebase/php-jwt": "^6.5",
+        "bordoni/phpass": "dev-main",
         "phpmailer/phpmailer": "^6.6"
     },
     "authors": [

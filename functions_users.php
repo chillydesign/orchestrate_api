@@ -1,6 +1,7 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Hautelook\Phpass\PasswordHash;
 
 function encrypt_password($password) {
@@ -150,7 +151,7 @@ function get_current_user_id_from_jwt() {
     if ($jwt_token) {
         try {
             JWT::$leeway = 60; // $leeway in seconds
-            $token = JWT::decode($jwt_token, JWT_SECRET, [JWT_ALG]);
+            $token = JWT::decode($jwt_token,  new Key(JWT_SECRET, JWT_ALG));
             $now = new DateTimeImmutable();
 
             if (
@@ -163,6 +164,7 @@ function get_current_user_id_from_jwt() {
                 $current_user_id = $token->user_id;
             }
         } catch (Exception $e) {
+            var_dump($e);
         }
     }
     return $current_user_id;

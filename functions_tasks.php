@@ -323,7 +323,6 @@ function create_task($task) {
             unset($conn);
             return ($task_id);
         } catch (PDOException $err) {
-            // var_dump($err);
             return false;
         };
     } else { // task project_id was blank
