@@ -179,10 +179,9 @@ if (isset($_GET['route'])) {
     } // end of if route is monthly_stats
 
 
-
-
-
-
+    if ($route == 'testme') {
+        include('routes/testme/index.php');
+    }
 } else {
     //  error
     http_response_code(404);
