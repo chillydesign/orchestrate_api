@@ -9,6 +9,10 @@
 
 #Options +FollowSymLinks
 RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
+
 RewriteRule    ^([a-zA-Z0-9]+)/?([a-zA-Z0-9]+)?/?$       index.php?route=$1&id=$2 [NC,L,QSA]
 
 RewriteCond %{REQUEST_METHOD} OPTIONS
