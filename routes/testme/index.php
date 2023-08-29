@@ -1,6 +1,7 @@
 <?php
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 $jwt_token = $_GET['token'];
 $current_user_id = null;
