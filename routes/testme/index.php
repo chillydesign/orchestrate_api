@@ -1,5 +1,7 @@
 <?php
 
+use Firebase\JWT\JWT;
+
 $jwt_token = $_GET['token'];
 $current_user_id = null;
 if ($jwt_token) {
