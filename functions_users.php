@@ -148,6 +148,7 @@ function generate_jwt_token($user_id, $remember_me) {
 function get_current_user_id_from_jwt() {
     $current_user_id = null;
     $jwt_token = get_token_from_headers();
+    var_dump($jwt_token);
     if ($jwt_token) {
         try {
             JWT::$leeway = 60; // $leeway in seconds
