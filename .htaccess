@@ -1,13 +1,13 @@
 
-Header always set Access-Control-Allow-Origin "*"
-Header always set Access-Control-Allow-Headers "*"
-Header always set Access-Control-Allow-Methods "*"
+# Header always set Access-Control-Allow-Origin "*"
+# Header always set Access-Control-Allow-Headers "*"
+# Header always set Access-Control-Allow-Methods "*"
 
 
 <IfModule mod_rewrite.c>
 
 
-Options +FollowSymLinks
+#Options +FollowSymLinks
 RewriteEngine On
 RewriteRule    ^([a-zA-Z0-9]+)/?([a-zA-Z0-9]+)?/?$       index.php?route=$1&id=$2 [NC,L,QSA]
 
