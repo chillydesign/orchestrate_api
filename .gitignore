@@ -2,3 +2,4 @@ env.php
 public/
 public/uploads/
 /vendor/
+database_backups
