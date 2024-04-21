@@ -155,6 +155,15 @@ if (isset($_GET['route'])) {
     if ($route == 'user_token') {
         include('routes/user_token/create.php');
     }
+    if ($route == 'two_factor_token') {
+        include('routes/two_factor_token/create.php');
+    }
+    if ($route == 'confirm_two_factor_token') {
+        include('routes/two_factor_token/confirm.php');
+    }
+    if ($route == 'remove_two_factor_token') {
+        include('routes/two_factor_token/delete.php');
+    }
 
 
     if ($route == 'clients') {

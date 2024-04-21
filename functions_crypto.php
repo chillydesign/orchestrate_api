@@ -11,6 +11,11 @@ function cryptoDecrypt($secret) {
     return Crypto::decrypt($secret, $key);
 }
 
+function cryptoEncrypt($secret) {
+    $key = safeKey();
+    return Crypto::encrypt($secret, $key);
+}
+
 
 function safeKey() {
     return Key::loadFromAsciiSafeString(CHARLIE_CRYPTO_KEY);

@@ -19,6 +19,66 @@ function makeTwoFactorAuth() {
     );
 };
 
+function getQRImageof2fa($encrypted_secret) {
+    $tfa = makeTwoFactorAuth();
+    $secret = cryptoDecrypt($encrypted_secret);
+    $qr_code = $tfa->getQRCodeImageAsDataUri('Orchestrate', $secret, 250);
+    // $qr_url = $tfa->getQRText('Orchestrate', $secret);
+    return $qr_code;
+}
+
+function verifyCode($decrypted_secret, $two_factor_code) {
+    $tfa = makeTwoFactorAuth();
+    return $tfa->verifyCode($decrypted_secret, $two_factor_code, 1);
+}
+
+
+
+function add2faSecretToUser($user_id) {
+
+    global $conn;
+
+    try {
+
+        deleteAll2FASecrets($user_id);
+        $tfa = makeTwoFactorAuth();
+        $secret = $tfa->createSecret();
+        $encrypted_secret = cryptoEncrypt($secret);
+        $sql = "INSERT INTO totps (user_id, encrypted_secret) VALUES (:user_id, :encrypted_secret)";
+        $query = $conn->prepare($sql);
+        $query->bindParam(':user_id', $user_id);
+        $query->bindParam(':encrypted_secret', $encrypted_secret);
+        $query->execute();
+        $last_insert_id = $conn->lastInsertId();
+        unset($conn);
+        return ($encrypted_secret);
+    } catch (PDOException $err) {
+        echo json_encode($err->getMessage());
+    };
+}
+
+
+
+function deleteAll2FASecrets($user_id) {
+
+    global $conn;
+    if ($user_id > 0) {
+
+        try {
+            $sql = "DELETE FROM totps  WHERE user_id = :user_id    ";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':user_id', $user_id);
+            $query->setFetchMode(PDO::FETCH_OBJ);
+            $query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+            return false;
+        };
+    } else {
+        return false;
+    }
+}
 
 
 
@@ -224,6 +284,33 @@ function get_user_from_email($email) {
         return null;
     }
 }
+
+
+
+
+function update_user_verirification_method($user_id, $verification_method) {
+    global $conn;
+    if ($user_id > 0) {
+        try {
+
+            $query = "UPDATE users SET 
+            `verification_method` = :verification_method
+            WHERE id = :id";
+            $comment_query = $conn->prepare($query);
+            $comment_query->bindParam(':verification_method', $verification_method);
+            $comment_query->bindParam(':id', $user_id);
+            $comment_query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+            return false;
+        };
+    } else { // comment name was blank
+        return false;
+    }
+}
+
+
 
 
 function get_totp_encrypted_secret($user_id) {

@@ -35,11 +35,13 @@ if ($user_from_email) {
                 $totp = get_totp_encrypted_secret($user_from_email->id);
                 if ($totp) {
                     $decrypted_secret =  cryptoDecrypt($totp->encrypted_secret);
-                    $code_verified =  $tfa->verifyCode($decrypted_secret, $two_factor_code, 1);
+                    $code_verified =  verifyCode($decrypted_secret, $two_factor_code);
                     if ($code_verified) {
                         $can_generate_jwt = true;
                     } else {
                         $errors = true;
+                        //// DO SOMETHING IF WRONG CODE USED
+                        //// CHECK FOR RECOVERY CODES MAYBE
                     }
                 } else {
                     $errors = true;
