@@ -3,6 +3,24 @@
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Hautelook\Phpass\PasswordHash;
+use RobThree\Auth\TwoFactorAuth;
+use RobThree\Auth\Providers\Qr\BaconQrCodeProvider;
+
+
+include 'functions_crypto.php';
+
+function makeTwoFactorAuth() {
+    return new TwoFactorAuth(
+        issuer: 'Charlie',
+        qrcodeprovider: new BaconQrCodeProvider(
+            borderWidth: 1,
+            format: 'svg'
+        ),
+    );
+};
+
+
+
 
 function encrypt_password($password) {
     $passwordHasher = new PasswordHash(8, false);
@@ -186,7 +204,7 @@ function get_user_from_email($email) {
     global $conn;
     if ($email != '') {
         try {
-            $query = "SELECT password_digest, id, email FROM users WHERE email = :email  LIMIT 1";
+            $query = "SELECT password_digest, id, email, verification_method FROM users WHERE email = :email  LIMIT 1";
             $user_query = $conn->prepare($query);
             $user_query->bindParam(':email', $email);
             $user_query->setFetchMode(PDO::FETCH_OBJ);
@@ -199,6 +217,32 @@ function get_user_from_email($email) {
             }
             unset($conn);
             return $user;
+        } catch (PDOException $err) {
+            return null;
+        };
+    } else {
+        return null;
+    }
+}
+
+
+function get_totp_encrypted_secret($user_id) {
+    global $conn;
+    if ($user_id != '') {
+        try {
+            $sql = "SELECT encrypted_secret FROM totps WHERE user_id = :user_id  LIMIT 1";
+            $query = $conn->prepare($sql);
+            $query->bindParam(':user_id', $user_id);
+            $query->setFetchMode(PDO::FETCH_OBJ);
+            $query->execute();
+            $count = $query->rowCount();
+            if ($count == 1) {
+                $result =  $query->fetch();
+            } else {
+                $result = null;
+            }
+            unset($conn);
+            return $result;
         } catch (PDOException $err) {
             return null;
         };

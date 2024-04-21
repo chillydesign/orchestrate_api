@@ -31,6 +31,8 @@ define("JWT_SECRET", getenv('JWT_SECRET'));
 define("JWT_ALG", getenv('JWT_ALG'));
 define("JWT_SERVER", getenv('JWT_SERVER'));
 
+define("CHARLIE_CRYPTO_KEY", getenv('CHARLIE_CRYPTO_KEY'));
+
 try {
 
     $conn = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME,  DB_USER, DB_PASSWORD);
