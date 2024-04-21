@@ -33,6 +33,13 @@ function verifyCode($decrypted_secret, $two_factor_code) {
 }
 
 
+function userIdEncrypted($user_id) {
+    return cryptoEncrypt(strval($user_id));
+}
+
+
+
+
 
 function add2faSecretToUser($user_id) {
 
