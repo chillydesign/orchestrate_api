@@ -23,6 +23,7 @@ if (isset($_GET['format'])) {
     if ($format === 'csv') {
         $show_csv = true;
         $status = 'all';
+        $limit = 100000;
     }
 }
 
