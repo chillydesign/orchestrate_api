@@ -11,7 +11,7 @@ include 'functions_crypto.php';
 
 function makeTwoFactorAuth() {
     return new TwoFactorAuth(
-        issuer: 'Charlie',
+        issuer: 'Orchestrate',
         qrcodeprovider: new BaconQrCodeProvider(
             borderWidth: 1,
             format: 'svg'
@@ -19,10 +19,10 @@ function makeTwoFactorAuth() {
     );
 };
 
-function getQRImageof2fa($encrypted_secret) {
+function getQRImageof2fa($encrypted_secret, $label) {
     $tfa = makeTwoFactorAuth();
     $secret = cryptoDecrypt($encrypted_secret);
-    $qr_code = $tfa->getQRCodeImageAsDataUri('Orchestrate', $secret, 250);
+    $qr_code = $tfa->getQRCodeImageAsDataUri($label, $secret, 250);
     // $qr_url = $tfa->getQRText('Orchestrate', $secret);
     return $qr_code;
 }
@@ -199,7 +199,9 @@ function get_token_from_headers() {
     $token = '';
     foreach (getallheaders() as $name => $value) {
         if ($name === 'Authorization') {
-            $token =  explode('Bearer ', $value)[1];
+            if ($value) {
+                $token =  explode('Bearer ', $value)[1];
+            }
         }
     }
     return $token;

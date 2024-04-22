@@ -10,7 +10,7 @@ if ($current_user) {
     $encrypted_secret = add2faSecretToUser($current_user->id);
 
     if ($encrypted_secret) {
-        $qr_code = getQRImageof2fa($encrypted_secret);
+        $qr_code = getQRImageof2fa($encrypted_secret, $current_user->email);
         $response->qr_code = $qr_code;
     } else {
         $errors = true;
