@@ -491,7 +491,8 @@ function update_task($task_id, $task) {
             `assignee_id` = :assignee_id, 
             `updated_at` = :updated_at,
             `completed_at` = :completed_at ,
-            `time_taken` = :time_taken 
+            `time_taken` = :time_taken ,
+            `task_code` = :task_code 
             WHERE id = :id";
 
             $task_query = $conn->prepare($query);
@@ -509,6 +510,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':updated_at', $updated_at);
             $task_query->bindParam(':completed_at', $task->completed_at);
             $task_query->bindParam(':time_taken', $task->time_taken);
+            $task_query->bindParam(':task_code', $task->task_code);
             $task_query->bindParam(':id', $task_id);
             $task_query->execute();
             unset($conn);
