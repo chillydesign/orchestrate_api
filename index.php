@@ -187,6 +187,11 @@ if (isset($_GET['route'])) {
         include('routes/monthly_stats/index.php');
     } // end of if route is monthly_stats
 
+    if ($route == 'stats') {
+        if (isset($_GET['id'])) {
+            include('routes/stats/show.php');
+        }
+    }
 
     if ($route == 'testme') {
         include('routes/testme/index.php');

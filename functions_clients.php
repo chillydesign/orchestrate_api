@@ -191,3 +191,52 @@ function processClients($clients) {
 
     return $clients;
 }
+
+
+function get_client_stats($client_id) {
+
+    global $conn;
+    $query = "SELECT sum(time_taken) as t,completed_at
+    FROM tasks
+    LEFT JOIN projects on tasks.project_id = projects.id
+    WHERE completed = 1 
+    AND projects.client_id = :client_id
+    group by month(tasks.completed_at)
+    ORDER by tasks.completed_at";
+    try {
+        $tasks_query = $conn->prepare($query);
+        $tasks_query->bindParam(':client_id', $client_id);
+        $tasks_query->setFetchMode(PDO::FETCH_OBJ);
+        $tasks_query->execute();
+        $stats_count = $tasks_query->rowCount();
+        if ($stats_count > 0) {
+            $stats =  $tasks_query->fetchAll();
+            $stats = processStats($stats);
+        } else {
+            $stats =  [];
+        }
+        return $stats;
+        unset($conn);
+    } catch (PDOException $err) {
+        return [];
+    };
+}
+
+
+function processStats($stats) {
+    $ret = array();
+    foreach ($stats as $stat) {
+        $ca = $stat->completed_at;
+
+        if ($ca) {
+            $month =   date('Y-m', strtotime($ca));
+
+            $h =  new stdClass();
+            $h->month = $month;
+            $h->data = intval($stat->t);
+
+            array_push($ret, $h);
+        }
+    }
+    return $ret;
+}
