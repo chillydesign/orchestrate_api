@@ -201,7 +201,7 @@ function get_client_stats($client_id) {
     LEFT JOIN projects on tasks.project_id = projects.id
     WHERE completed = 1 
     AND projects.client_id = :client_id
-    group by month(tasks.completed_at)
+    group by EXTRACT(YEAR_MONTH FROM tasks.completed_at)
     ORDER by tasks.completed_at";
     try {
         $tasks_query = $conn->prepare($query);
