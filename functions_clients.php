@@ -196,7 +196,7 @@ function processClients($clients) {
 function get_all_client_stats() {
 
     global $conn;
-    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     LEFT join clients on projects.client_id = clients.id
@@ -224,7 +224,7 @@ function get_all_client_stats() {
 function get_client_stats($client_id) {
 
     global $conn;
-    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     LEFT join clients on projects.client_id = clients.id
@@ -302,6 +302,7 @@ function processStats($stats) {
                 $ret[$client_id] = new stdClass();
                 $ret[$client_id]->id = $client_id;
                 $ret[$client_id]->name =  $stat->name;
+                $ret[$client_id]->client_slug =  $stat->slug;
                 $ret[$client_id]->data = array();
                 $ret[$client_id]->color = allowedColors()[$c];
                 $c = ($c + 1) % sizeof(allowedColors());
