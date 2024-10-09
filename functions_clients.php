@@ -328,6 +328,12 @@ function processStats($stats) {
                 array_push($r->data, $h);
             }
         }
+        usort($r->data, 'sortByMonth');
     }
     return $ret;
+}
+
+
+function sortByMonth($a, $b) {
+    return strcmp($a->month, $b->month);
 }
