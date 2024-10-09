@@ -286,7 +286,7 @@ function processStats($stats) {
         $client_id = $stat->client_id;
         $ca = $stat->completed_at;
 
-        if ($ca) {
+        if ($ca && $client_id) {
 
 
 
@@ -312,14 +312,14 @@ function processStats($stats) {
     }
 
 
-    $ret = array_values($ret);
 
+
+    // add months back for every client if not there
+    $ret = array_values($ret);
     foreach ($ret as $r) {
         $rm = array_map(function ($n) {
             return $n->month;
         },  $r->data);
-
-
         foreach ($months as $month) {
             if ((array_search($month, $rm) ===  false)) {
                 $h =  new stdClass();
