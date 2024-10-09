@@ -190,6 +190,8 @@ if (isset($_GET['route'])) {
     if ($route == 'stats') {
         if (isset($_GET['id'])) {
             include('routes/stats/show.php');
+        } else {
+            include('routes/stats/index.php');
         }
     }
 

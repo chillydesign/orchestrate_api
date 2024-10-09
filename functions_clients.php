@@ -193,10 +193,37 @@ function processClients($clients) {
 }
 
 
+function get_all_client_stats() {
+
+    global $conn;
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id
+    FROM tasks
+    LEFT JOIN projects on tasks.project_id = projects.id
+    WHERE completed = 1 
+    group by EXTRACT(YEAR_MONTH FROM tasks.completed_at), projects.client_id
+    ORDER by tasks.completed_at";
+    try {
+        $tasks_query = $conn->prepare($query);
+        $tasks_query->setFetchMode(PDO::FETCH_OBJ);
+        $tasks_query->execute();
+        $stats_count = $tasks_query->rowCount();
+        if ($stats_count > 0) {
+            $stats =  $tasks_query->fetchAll();
+            $stats = processStats($stats);
+        } else {
+            $stats =  [];
+        }
+        return $stats;
+        unset($conn);
+    } catch (PDOException $err) {
+        return [];
+    };
+}
+
 function get_client_stats($client_id) {
 
     global $conn;
-    $query = "SELECT sum(time_taken) as t,completed_at
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     WHERE completed = 1 
@@ -223,19 +250,83 @@ function get_client_stats($client_id) {
 }
 
 
+
+function allowedColors() {
+    return [
+        '#3369FF',
+        '#38CA5E',
+
+        '#3473EF',
+        '#38C06E',
+
+        '#347CDF',
+        '#37B77E',
+
+        '#3586CF',
+        '#37AD8E',
+
+        '#3590BF',
+        '#36A39E',
+
+        '#369AAF',
+
+    ];
+}
+
 function processStats($stats) {
     $ret = array();
+
+    $months = array();
+    $c = 0;
+
     foreach ($stats as $stat) {
+
+
+
+        $client_id = $stat->client_id;
         $ca = $stat->completed_at;
 
         if ($ca) {
+
+
+
+            if (!isset($ret[$client_id])) {
+                $ret[$client_id] = new stdClass();
+                $ret[$client_id]->id = $client_id;
+                $ret[$client_id]->name =  $client_id;
+                $ret[$client_id]->data = array();
+                $ret[$client_id]->color = allowedColors()[$c];
+                $c = ($c + 1) % sizeof(allowedColors());
+            }
+
             $month =   date('Y-m', strtotime($ca));
 
+            if (!in_array($month, $months)) {
+                array_push($months, $month);
+            }
             $h =  new stdClass();
             $h->month = $month;
             $h->data = intval($stat->t);
+            array_push($ret[$client_id]->data, $h);
+        }
+    }
 
-            array_push($ret, $h);
+
+    $ret = array_values($ret);
+
+    foreach ($ret as $r) {
+        $rm = array_map(function ($n) {
+            return $n->month;
+        },  $r->data);
+
+
+        foreach ($months as $month) {
+            if ((array_search($month, $rm) ===  false)) {
+                $h =  new stdClass();
+                $h->month = $month;
+                $h->data = 0;
+                array_push($r->data, $h);
+            }
         }
     }
     return $ret;
