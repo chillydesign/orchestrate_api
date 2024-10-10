@@ -315,7 +315,7 @@ function processStats($stats) {
             }
             $h =  new stdClass();
             $h->month = $month;
-            $h->data = intval($stat->t);
+            $h->data = round(intval($stat->t) / 60, 1);
             array_push($ret[$client_id]->data, $h);
         }
     }
