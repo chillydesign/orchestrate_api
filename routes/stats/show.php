@@ -8,10 +8,20 @@ if (isset($_GET['slug'])) {
     $client = get_client($id);
 }
 
+$start_date = null;
+$end_date = null;
+
+if (isset($_GET['start_date'])) {
+    $start_date = $_GET['start_date'];
+}
+if (isset($_GET['end_date'])) {
+    $end_date = $_GET['end_date'];
+}
+
 
 if ($client) {
 
-    $stats = get_client_stats($client->id);
+    $stats = get_client_stats($client->id, $start_date, $end_date);
 
 
     echo json_encode($stats);

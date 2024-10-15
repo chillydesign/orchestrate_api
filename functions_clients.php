@@ -193,20 +193,34 @@ function processClients($clients) {
 }
 
 
-function get_all_client_stats() {
+function get_all_client_stats($start_date, $end_date) {
 
     global $conn;
+    $date_sql = '';
+    if ($start_date && $end_date) {
+        $date_sql = ' AND tasks.completed_at > :start_date AND tasks.completed_at < :end_date';
+    }
+
+
     $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     LEFT join clients on projects.client_id = clients.id
     WHERE completed = 1 
+    $date_sql
     group by EXTRACT(YEAR_MONTH FROM tasks.completed_at), projects.client_id
     ORDER by tasks.completed_at";
     try {
         $tasks_query = $conn->prepare($query);
+        if ($start_date && $end_date) {
+            $tasks_query->bindParam(':start_date', $start_date);
+            $tasks_query->bindParam(':end_date', $end_date);
+        }
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
+
+
+
         $stats_count = $tasks_query->rowCount();
         if ($stats_count > 0) {
             $stats =  $tasks_query->fetchAll();
@@ -221,8 +235,12 @@ function get_all_client_stats() {
     };
 }
 
-function get_client_stats($client_id) {
+function get_client_stats($client_id, $start_date, $end_date) {
 
+    $date_sql = '';
+    if ($start_date && $end_date) {
+        $date_sql = ' AND tasks.completed_at > :start_date AND tasks.completed_at < :end_date';
+    }
     global $conn;
     $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
     FROM tasks
@@ -230,11 +248,17 @@ function get_client_stats($client_id) {
     LEFT join clients on projects.client_id = clients.id
     WHERE completed = 1 
     AND projects.client_id = :client_id
+    $date_sql
     group by EXTRACT(YEAR_MONTH FROM tasks.completed_at)
     ORDER by tasks.completed_at";
+
     try {
         $tasks_query = $conn->prepare($query);
         $tasks_query->bindParam(':client_id', $client_id);
+        if ($start_date && $end_date) {
+            $tasks_query->bindParam(':start_date', $start_date);
+            $tasks_query->bindParam(':end_date', $end_date);
+        }
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
         $stats_count = $tasks_query->rowCount();
