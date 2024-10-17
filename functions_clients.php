@@ -310,6 +310,7 @@ function processStats($stats) {
 
     $months = array();
     $c = 0;
+    $colors = allowedColors();
 
     foreach ($stats as $stat) {
 
@@ -328,8 +329,9 @@ function processStats($stats) {
                 $ret[$client_id]->name =  $stat->name;
                 $ret[$client_id]->client_slug =  $stat->slug;
                 $ret[$client_id]->data = array();
-                $ret[$client_id]->color = allowedColors()[$c];
-                $c = ($c + 1) % sizeof(allowedColors());
+                $ret[$client_id]->color = $colors[$client_id % sizeof($colors)];
+                // $ret[$client_id]->color = allowedColors()[$c];
+                // $c = ($c + 1) % sizeof(allowedColors());
             }
 
             $month =   date('Y-m', strtotime($ca));
