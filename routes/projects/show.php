@@ -3,15 +3,23 @@
 
 
 
-$id = $_GET['id'];
+
+
+if (isset($_GET['slug'])) {
+    $slug = $_GET['slug'];
+    $project = get_project($slug, true);
+} else {
+    $id = $_GET['id'];
+    $project = get_project($id, false);
+}
 
 
 
-
-$project = get_project($id);
 if ($project) {
 
-    $task_opts = array('project_id' => $id);
+    $project_id = $project->id;
+
+    $task_opts = array('project_id' => $project_id);
 
     $current_user = get_current_user_from_jwt();
     if (!$current_user) {
@@ -21,7 +29,7 @@ if ($project) {
 
     addUsersToTasks($tasks);
 
-    $uploads = get_uploads($id);
+    $uploads = get_uploads($project_id);
 
     $project->tasks = $tasks;
     $project->uploads = $uploads;

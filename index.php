@@ -23,7 +23,7 @@ if (isset($_GET['route'])) {
     $route = $_GET['route'];
 
     if ($route == 'projects') {
-        if (isset($_GET['id'])) {
+        if (isset($_GET['id'])  || isset($_GET['slug'])) {
             if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
                 include('routes/projects/delete.php');
             } else if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {

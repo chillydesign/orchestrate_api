@@ -129,16 +129,26 @@ function get_projects($opts = null) {
 
 
 
-function get_project($project_id = null) {
+function get_project($project_id = null, $try_slug = false) {
 
     global $conn;
     if ($project_id != null) {
 
 
         try {
-            $query = "SELECT * FROM projects WHERE projects.id = :id LIMIT 1";
+
+            if ($try_slug) {
+                $query = "SELECT * FROM projects WHERE projects.slug = :slug LIMIT 1";
+            } else {
+                $query = "SELECT * FROM projects WHERE projects.id = :id LIMIT 1";
+            }
+
             $project_query = $conn->prepare($query);
-            $project_query->bindParam(':id', $project_id);
+            if ($try_slug) {
+                $project_query->bindParam(':slug', $project_id);
+            } else {
+                $project_query->bindParam(':id', $project_id);
+            }
             $project_query->setFetchMode(PDO::FETCH_OBJ);
             $project_query->execute();
 
@@ -173,13 +183,25 @@ function create_project($project) {
                 $project->month = null;
             }
         }
+        if (isset($project->slug)) {
+            $project_slug = slugify($project->slug);
+        } else {
+            $project_slug = slugify($project->name);
+        }
+
+
+
+        $today = new DateTime();
+        $slugdate_str = $today->format("Y-m-d");
+        $project_slug = slugify($project_slug . '-' . $slugdate_str);
 
 
         try {
-            $query = "INSERT INTO projects (name, client_id, month) VALUES (:name, :client_id, :month)";
+            $query = "INSERT INTO projects (name, client_id, month, slug) VALUES (:name, :client_id, :month, :slug)";
             $project_query = $conn->prepare($query);
             $project_query->bindParam(':name', $project->name);
             $project_query->bindParam(':client_id', $project->client_id);
+            $project_query->bindParam(':slug', $project_slug);
             $project_query->bindParam(':month', $project->month);
             $project_query->execute();
             $project_id = $conn->lastInsertId();
@@ -196,6 +218,32 @@ function create_project($project) {
 }
 
 
+function slugify($text,) {
+    // replace non letter or digits by divider
+    $divider = '-';
+    $text = preg_replace('~[^\pL\d]+~u', $divider, $text);
+
+    // transliterate
+    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+    // remove unwanted characters
+    $text = preg_replace('~[^-\w]+~', '', $text);
+
+    // trim
+    $text = trim($text, $divider);
+
+    // remove duplicate divider
+    $text = preg_replace('~-+~', $divider, $text);
+
+    // lowercase
+    $text = strtolower($text);
+
+    if (empty($text)) {
+        return 'n-a';
+    }
+
+    return $text;
+}
 
 
 
