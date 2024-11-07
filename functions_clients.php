@@ -202,7 +202,7 @@ function get_all_client_stats($start_date, $end_date) {
     }
 
 
-    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, clients.slug
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     LEFT join clients on projects.client_id = clients.id
@@ -242,7 +242,7 @@ function get_client_stats($client_id, $start_date, $end_date) {
         $date_sql = ' AND tasks.completed_at > :start_date AND tasks.completed_at < :end_date';
     }
     global $conn;
-    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, slug
+    $query = "SELECT sum(time_taken) as t,completed_at, client_id, clients.name, clients.slug
     FROM tasks
     LEFT JOIN projects on tasks.project_id = projects.id
     LEFT join clients on projects.client_id = clients.id
