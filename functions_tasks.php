@@ -41,7 +41,7 @@ function get_tasks($opts) {
 
     $sear_sql = '';
     if (isset($opts['search_term'])) {
-        $sear_sql = " AND  (content LIKE :search_term OR translation LIKE :search_term  )   ";
+        $sear_sql = " AND  (content LIKE :search_term   OR  task_code LIKE :search_term  OR translation LIKE :search_term  )   ";
     }
 
     $com_sql = '';

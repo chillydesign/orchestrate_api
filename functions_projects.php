@@ -69,7 +69,7 @@ function get_projects($opts = null) {
             $cur_sql = " AND tasks.is_current = 1 AND tasks.assignee_id = $assignee_id AND tasks.completed = 0";
         }
         if ($search_term) {
-            $sear_sql = " AND  (tasks.content LIKE :search_term   OR projects.name LIKE :search_term  )   ";
+            $sear_sql = " AND  (tasks.content LIKE :search_term OR tasks.task_code LIKE :search_term  OR projects.name LIKE :search_term  )   ";
         }
     }
 
@@ -82,7 +82,7 @@ function get_projects($opts = null) {
 
     try {
         $query = "SELECT  $cur_dist_sql projects.* , clients.slug as client_slug  FROM projects $cur_join_sql
-         LEFT JOIN clients ON  clients.id = projects.client_id
+        LEFT JOIN clients ON  clients.id = projects.client_id
         WHERE 1 = 1
         $status_sql
         $client_id_sql
@@ -112,6 +112,7 @@ function get_projects($opts = null) {
         $projects_query->setFetchMode(PDO::FETCH_OBJ);
         $projects_query->execute();
         $projects_count = $projects_query->rowCount();
+
 
         if ($projects_count > 0) {
             $projects =  $projects_query->fetchAll();
