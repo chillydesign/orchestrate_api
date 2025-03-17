@@ -22,6 +22,12 @@ if (isset($_GET['order'])) {
 if (isset($_GET['completed'])) {
     $opts['completed'] = $_GET['completed'];
 }
+if (isset($_GET['start_date'])) {
+    $opts['start_date'] = $_GET['start_date'];
+}
+if (isset($_GET['end_date'])) {
+    $opts['end_date'] = $_GET['end_date'];
+}
 
 $current_user = get_current_user_from_jwt();
 if (!$current_user) {
