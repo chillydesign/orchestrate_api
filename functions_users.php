@@ -215,7 +215,7 @@ function generate_jwt_token($user_id, $remember_me) {
     if ($remember_me) {
         $time =  '+60480 minutes'; // 42 days
     } else {
-        $time = '+1440 minutes'; // one days
+        $time = '+1440 minutes'; // one day
     }
 
     $expire     = $issuedAt->modify($time);
@@ -251,7 +251,7 @@ function get_current_user_id_from_jwt() {
                 $current_user_id = $token->user_id;
             }
         } catch (Exception $e) {
-            var_dump($e);
+            // var_dump($e);
         }
     }
     return $current_user_id;
