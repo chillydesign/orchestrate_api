@@ -538,6 +538,29 @@ function processProjects($projects) {
 }
 
 
+function send_hourly_email_reminder() {
+    try {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isSMTP();                          // Set mailer to use SMTP
+        $mail->Host = 'smtp.gmail.com';           // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                   // Enable SMTP authentication
+        $mail->Username = MAIL_USERNAME;          // SMTP username
+        $mail->Password = MAIL_PASSWORD;          // SMTP password
+        $mail->SMTPSecure = 'tls';                // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;
+        $mail->Subject = 'New tasks on orchestrate';
+        $body = 'New tasks on orchestrate';
+        $mail->Body  = $body;
+        $user  = get_user(1);
+        $mail->addAddress($user->email);
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return  "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
 
 function send_email_project_created($project) {
 
