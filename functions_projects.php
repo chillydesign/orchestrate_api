@@ -541,9 +541,8 @@ function processProjects($projects) {
 function send_hourly_email_reminder() {
     try {
         $current_time = new DateTime();
-        $formatted_time = $current_time->format('Y-m-d H:00:00');
-        $opts = array('start_date' => $formatted_time);
-        $tasks = get_tasks($opts);
+        $six_hours_ago = $current_time->sub(new DateInterval('PT6H'))->format('Y-m-d H:00:00');
+        $tasks = get_tasks(array('start_date' => $six_hours_ago, 'completed' => 0));
 
 
         if (sizeof($tasks) > 0) {
@@ -567,8 +566,8 @@ function send_hourly_email_reminder() {
             $mail->Body  = $body;
             $user = get_user(1);
             $mail->addAddress($user->email);
-            // echo $mail->Body;
-            $mail->send();
+            echo $mail->Body;
+            // $mail->send();
         }
 
 
