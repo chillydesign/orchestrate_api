@@ -557,7 +557,7 @@ function send_hourly_email_reminder() {
             $mail->Password = MAIL_PASSWORD;          // SMTP password
             $mail->SMTPSecure = 'tls';                // Enable TLS encryption, `ssl` also accepted
             $mail->Port = 587;
-            $mail->Subject = 'New tasks on orchestrate';
+            $mail->Subject = 'New tasks on orchestrate at' .  $six_hours_ago;
             $body = '<p>New tasks on orchestrate</p><ul>';
             foreach ($tasks as $task) {
                 $body .= '<li>' . $task->content . '<a href="' . $base_href  . '/projects/' . $task->project_id . '"> View </a></li>';
