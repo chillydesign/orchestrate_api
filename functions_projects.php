@@ -566,8 +566,8 @@ function send_hourly_email_reminder() {
             $mail->Body  = $body;
             $user = get_user(1);
             $mail->addAddress($user->email);
-            echo $mail->Body;
-            // $mail->send();
+            // echo $mail->Body;
+            $mail->send();
         }
 
 
