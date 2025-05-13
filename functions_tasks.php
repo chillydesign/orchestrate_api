@@ -530,6 +530,7 @@ function update_task($task_id, $task) {
             unset($conn);
             return true;
         } catch (PDOException $err) {
+            var_dump($err);
             return false;
         };
     } else { // task name was blank
