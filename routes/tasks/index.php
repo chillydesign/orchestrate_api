@@ -28,10 +28,16 @@ if (isset($_GET['start_date'])) {
 if (isset($_GET['end_date'])) {
     $opts['end_date'] = $_GET['end_date'];
 }
+if (isset($_GET['include_comments'])) {
+    $opts['include_comments'] = $_GET['include_comments'];
+} else {
+    $opts['include_comments'] = false;
+}
 
 $current_user = get_current_user_from_jwt();
 if (!$current_user) {
     $opts['is_public'] = true;
+    $opts['include_comments'] = false;
 }
 
 
