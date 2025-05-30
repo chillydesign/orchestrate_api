@@ -12,6 +12,7 @@ $client_id = isset($_GET['client_id']) ? $_GET['client_id'] : null;
 $current = isset($_GET['current']) ? $_GET['current'] : null;
 $search_term = isset($_GET['search_term']) ? $_GET['search_term'] : null;
 $include_tasks = isset($_GET['include_tasks']) ? $_GET['include_tasks'] : null;
+$include_comments = isset($_GET['include_comments']) ? $_GET['include_comments'] : null;
 $assignee_id = isset($_GET['assignee_id']) ? intval($_GET['assignee_id']) : null;
 $project_id = isset($_GET['project_id']) ? $_GET['project_id'] : null;
 
@@ -39,6 +40,9 @@ if ($client_id) {
 
 
 
+if (!$current_user) {
+    $include_comments = false;
+}
 
 
 
@@ -49,7 +53,6 @@ $projects = get_projects(array(
     'status' => $status,
     'client_id' => $client_id,
     'current' => $current,
-    'include_tasks' => $include_tasks,
     'assignee_id' => $assignee_id,
     'search_term' => $search_term,
 ));
@@ -79,6 +82,7 @@ foreach ($projects as $project) {
                 'project_id' => $project->id,
                 'completed' => 0,
                 'assignee_id' => $assignee_id,
+                'include_comments' => $include_comments,
                 'is_current' => true
             )
         );
@@ -88,6 +92,8 @@ foreach ($projects as $project) {
 
         $task_opts =  array(
             'project_id' => $project->id,
+            'include_comments' => $include_comments,
+
             // 'completed' => 0
         );
         if (!$current_user) {

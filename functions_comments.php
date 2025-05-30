@@ -32,6 +32,36 @@ function get_comments($task_id) {
         };
     }
 }
+function get_comments_multiple_tasks($task_ids) {
+    global $conn;
+
+
+    $query = "SELECT *  FROM comments
+        WHERE  FIND_IN_SET(task_id,   :task_ids) 
+        ORDER BY  comments.created_at ASC";
+
+    try {
+        $comments_query = $conn->prepare($query);
+        $task_id_str = implode(',', $task_ids);
+        $comments_query->bindParam(':task_ids', $task_id_str);
+        $comments_query->setFetchMode(PDO::FETCH_OBJ);
+        $comments_query->execute();
+        $comments_count = $comments_query->rowCount();
+
+
+        if ($comments_count > 0) {
+            $comments =  $comments_query->fetchAll();
+            $comments = processComments($comments);
+        } else {
+            $comments =  [];
+        }
+
+        unset($conn);
+        return $comments;
+    } catch (PDOException $err) {
+        return [];
+    };
+}
 
 
 function get_comment($comment_id = null) {
@@ -72,9 +102,9 @@ function create_comment($comment) {
 
         try {
 
-            if (!isset($comment->author)) {
-                $comment->author = 'unknown';
-            }
+            // if (!isset($comment->author)) {
+            //     $comment->author = 'unknown';
+            // }
 
             $query = "INSERT INTO comments (message,author, task_id ) VALUES (:message, :author, :task_id)";
             $comment_query = $conn->prepare($query);

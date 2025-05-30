@@ -17,14 +17,19 @@ if (isset($_GET['slug'])) {
 
 if ($project) {
 
+    $current_user = get_current_user_from_jwt();
+
+
     $project_id = $project->id;
 
-    $task_opts = array('project_id' => $project_id);
+    $task_opts = array('project_id' => $project_id,  'include_comments' => true);
 
-    $current_user = get_current_user_from_jwt();
     if (!$current_user) {
         $task_opts['is_public'] = true;
+        $task_opts['include_comments'] = false;
     }
+
+
     $tasks = get_tasks($task_opts);
 
     addUsersToTasks($tasks);

@@ -10,7 +10,17 @@ $data = json_decode($json);
 if (!empty($data->attributes)) {
 
 
+
+
+
     $comment_attributes = $data->attributes;
+
+    $current_user = get_current_user_from_jwt();
+    if ($current_user) {
+        $comment_attributes->author = $current_user->name;
+    }
+
+
     $comment_id = create_comment($comment_attributes);
 
 

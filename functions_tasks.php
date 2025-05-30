@@ -105,12 +105,25 @@ function get_tasks($opts) {
         }
 
 
+
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
         $tasks_count = $tasks_query->rowCount();
 
         if ($tasks_count > 0) {
             $tasks =  $tasks_query->fetchAll();
+
+            if ($opts['include_comments'] == true) {
+                $task_ids = array_map(function ($task) {
+                    return $task->id;
+                }, $tasks);
+                $comments = get_comments_multiple_tasks($task_ids);
+                foreach ($tasks as $task) {
+                    $task->comments = array_values(array_filter($comments, function ($e) use ($task) {
+                        return $e->task_id == $task->id;
+                    }));
+                }
+            }
             $tasks = processTasks($tasks);
         } else {
             $tasks =  [];
@@ -122,6 +135,8 @@ function get_tasks($opts) {
         return [];
     };
 }
+
+
 
 function get_random_incomplete_tasks($project_id, $limit) {
     global $conn;
@@ -637,6 +652,16 @@ function processTask($task) {
     $task->project_id =  intval($task->project_id);
     $task->assignee_id =  intval($task->assignee_id);
     $task->uploads_count =  intval($task->uploads_count);
+
+
+    if (property_exists($task, 'comments')) {
+        if ($task->translation) {
+            $nc = new stdClass();
+            $nc->message = $task->translation;
+            array_unshift($task->comments, $nc);
+        }
+    }
+
     return $task;
 }
 

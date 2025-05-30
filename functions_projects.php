@@ -457,6 +457,13 @@ if (!function_exists('api_save_csv_string')) {
     }
 }
 
+function comments_as_string($comments) {
+    $messages = array_map(function ($comment) {
+        return $comment->message;
+    }, $comments);
+    return api_save_csv_string(implode(' | ', $messages));
+}
+
 
 function show_project_as_csv($json, $show_header = true) {
 
@@ -472,6 +479,7 @@ function show_project_as_csv($json, $show_header = true) {
         "Completed at",
         "Created at",
         "Updated at",
+        "Comments",
     );
 
     if ($show_header) {
@@ -501,6 +509,7 @@ function show_project_as_csv($json, $show_header = true) {
             $task->completed_at,
             $task->created_at,
             $task->updated_at,
+            comments_as_string($task->comments),
         ];
         array_push($csv_array,   implode(',', $csv_row));
     }
