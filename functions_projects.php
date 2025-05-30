@@ -187,14 +187,17 @@ function create_project($project) {
         if (isset($project->slug)) {
             $project_slug = slugify($project->slug);
         } else {
-            $project_slug = slugify($project->name);
+            if ($project->month) {
+                $project_slug = slugify($project->name . '-' . $project->month);
+            } else {
+                $today = new DateTime();
+                $slugdate_str = $today->format("Y-m-d");
+                $project_slug = slugify($project->name . '-' . $slugdate_str);
+            }
         }
 
 
 
-        $today = new DateTime();
-        $slugdate_str = $today->format("Y-m-d");
-        $project_slug = slugify($project_slug . '-' . $slugdate_str);
 
 
         try {
