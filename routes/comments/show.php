@@ -2,8 +2,14 @@
 
 
 $id = $_GET['id'];
+$comment  = null;
 
-$comment = get_comment($id);
+
+$current_user = get_current_user_from_jwt();
+if ($current_user) {
+    $comment = get_comment($id);
+}
+
 
 
 if ($comment) {
