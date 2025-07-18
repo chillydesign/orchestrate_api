@@ -417,7 +417,7 @@ function update_task_comment_count($task_id) {
         try {
             $comments_count = task_comment_count($task_id);
             $query = "UPDATE tasks SET 
-                `comments_count` = :comments_count, 
+                `comments_count` = :comments_count
                 WHERE id = :id";
             $task_query = $conn->prepare($query);
             $task_query->bindParam(':comments_count', $comments_count);
@@ -438,24 +438,21 @@ function update_task_uploads_count($task_id) {
 
     global $conn;
     if ($task_id > 0) {
-        // try {
-        $uploads_count = task_upload_count($task_id);
-        $updated_at =   updated_at_string();
+        try {
+            $uploads_count = task_upload_count($task_id);
 
-        $query = "UPDATE tasks SET 
-                `uploads_count` = :uploads_count, 
-                `updated_at` = :updated_at
+            $query = "UPDATE tasks SET 
+                `uploads_count` = :uploads_count
                 WHERE id = :id";
-        $task_query = $conn->prepare($query);
-        $task_query->bindParam(':uploads_count', $uploads_count);
-        $task_query->bindParam(':updated_at', $updated_at);
-        $task_query->bindParam(':id', $task_id);
-        $task_query->execute();
-        unset($conn);
-        return true;
-        // } catch (PDOException $err) {
-        return false;
-        // };
+            $task_query = $conn->prepare($query);
+            $task_query->bindParam(':uploads_count', $uploads_count);
+            $task_query->bindParam(':id', $task_id);
+            $task_query->execute();
+            unset($conn);
+            return true;
+        } catch (PDOException $err) {
+            return false;
+        };
     } else { // task id was less than 0
         return false;
     }
