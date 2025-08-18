@@ -260,6 +260,8 @@ function processUpload($upload) {
     $upload->project_id =  intval($upload->project_id);
     $upload->task_id =  intval($upload->task_id);
     $upload->id =  intval($upload->id);
+    $upload->nice_created_at = explode(' ', $upload->created_at)[0];
+    $upload->is_image = ($upload->extension == 'jpeg' || $upload->extension == 'png');
     return $upload;
 }
 
