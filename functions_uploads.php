@@ -217,6 +217,7 @@ function mime2ext($mime) {
     "svg":["image\/svg+xml"],"3g2":["video\/3gpp2"],"3gp":["video\/3gp","video\/3gpp"],
     "mp4":["video\/mp4"],"m4a":["audio\/x-m4a"],"f4v":["video\/x-f4v"],"flv":["video\/x-flv"],
     "webm":["video\/webm"],"aac":["audio\/x-acc"],"m4u":["application\/vnd.mpegurl"],
+    "webp": ["image/webp"],
     "pdf":["application\/pdf","application\/octet-stream"],
     "pptx":["application\/vnd.openxmlformats-officedocument.presentationml.presentation"],
     "ppt":["application\/powerpoint","application\/vnd.ms-powerpoint","application\/vnd.ms-office",
@@ -261,7 +262,7 @@ function processUpload($upload) {
     $upload->task_id =  intval($upload->task_id);
     $upload->id =  intval($upload->id);
     $upload->nice_created_at = explode(' ', $upload->created_at)[0];
-    $upload->is_image = ($upload->extension == 'jpeg' || $upload->extension == 'png');
+    $upload->is_image = ($upload->extension == 'jpeg' || $upload->extension == 'png' || $upload->extension == 'webp');
     return $upload;
 }
 
