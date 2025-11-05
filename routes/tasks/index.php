@@ -49,6 +49,11 @@ if (isset($_GET['completed_today'])) {
 }
 
 
+if (!$current_user) {
+    $tasks = makeTasksPublic($tasks);
+}
+
+
 
 addUsersToTasks($tasks);
 

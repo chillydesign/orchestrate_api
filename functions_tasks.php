@@ -668,6 +668,14 @@ function processTasks($tasks) {
     return $tasks;
 }
 
+
+function makeTasksPublic($tasks) {
+    foreach ($tasks as $task) {
+        unset($task->time_taken);
+    }
+    return $tasks;
+}
+
 function  addUsersToTasks($tasks) {
     $users = get_users();
     foreach ($tasks as $task) {
