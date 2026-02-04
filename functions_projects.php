@@ -554,7 +554,7 @@ function send_hourly_email_reminder() {
     try {
         $current_time = new DateTime();
         $six_hours_ago = $current_time->sub(new DateInterval('PT6H'))->format('Y-m-d H:00:00');
-        $tasks = get_tasks(array('start_date' => $six_hours_ago, 'completed' => 0));
+        $tasks = get_tasks(array('start_date' => $six_hours_ago, 'completed' => 0, 'include_comments' => false));
 
 
         if (sizeof($tasks) > 0) {
