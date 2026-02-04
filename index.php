@@ -164,6 +164,9 @@ if (isset($_GET['route'])) {
     if ($route == 'remove_two_factor_token') {
         include('routes/two_factor_token/delete.php');
     }
+    if ($route == 'email_template') {
+        include('routes/email_template/index.php');
+    }
 
 
     if ($route == 'clients') {
