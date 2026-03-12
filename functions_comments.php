@@ -69,7 +69,7 @@ function get_comment($comment_id = null) {
     if ($comment_id != null) {
 
         try {
-            $query = "SELECT * FROM comments WHERE comments.id = :id LIMIT 1";
+            $query = "SELECT comments.*, tasks.project_id FROM comments LEFT JOIN tasks ON tasks.id = comments.task_id  WHERE comments.id = :id LIMIT 1";
             $comment_query = $conn->prepare($query);
             $comment_query->bindParam(':id', $comment_id);
             $comment_query->setFetchMode(PDO::FETCH_OBJ);
@@ -186,6 +186,10 @@ function processComment($comment) {
     // if database is set as 1 it should return as true
     $comment->task_id =  intval($comment->task_id);
     $comment->id =  intval($comment->id);
+
+    if (property_exists($comment, 'project_id')) {
+        $comment->project_id =  intval($comment->project_id);
+    }
     return $comment;
 }
 
