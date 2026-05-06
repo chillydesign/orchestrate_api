@@ -28,6 +28,9 @@ if (isset($_GET['start_date'])) {
 if (isset($_GET['end_date'])) {
     $opts['end_date'] = $_GET['end_date'];
 }
+if (isset($_GET['for_calendar'])) {
+    $opts['for_calendar'] = true;
+}
 if (isset($_GET['include_comments'])) {
     $opts['include_comments'] = $_GET['include_comments'];
 } else {

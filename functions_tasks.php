@@ -49,12 +49,22 @@ function get_tasks($opts) {
         $com_sql = 'AND completed = :completed ';
     }
     $sda_sql = '';
-    if (isset($opts['start_date'])) {
-        $sda_sql = 'AND created_at > :start_date  ';
-    }
     $eda_sql = '';
-    if (isset($opts['end_date'])) {
-        $eda_sql = 'AND created_at < :end_date  ';
+    $cal_sql  = '';
+
+
+
+    if (isset($opts['for_calendar'])) {
+
+        $cal_sql = 'AND ((created_at > :start_date AND created_at < :end_date)  OR ( deadline_at > :start_date AND deadline_at < :end_date)     )   ';
+    } else {
+
+        if (isset($opts['start_date'])) {
+            $sda_sql = 'AND created_at > :start_date  ';
+        }
+        if (isset($opts['end_date'])) {
+            $eda_sql = 'AND created_at < :end_date  ';
+        }
     }
 
 
@@ -68,8 +78,10 @@ function get_tasks($opts) {
 
     // tasks.completed ASC,
     $query = "SELECT tasks.*  FROM tasks $left_join_sql  
-     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql $pub_sql   $cli_sql    $sear_sql  $sda_sql $eda_sql
+     WHERE 1 = 1   $proj_sql $cur_sql $ass_sql $com_sql $pub_sql   $cli_sql    $sear_sql  $sda_sql $eda_sql $cal_sql
      $ord_sql $lim_sql";
+
+
 
 
 
@@ -91,11 +103,17 @@ function get_tasks($opts) {
         if (isset($opts['limit'])) {
             $tasks_query->bindParam(':limit', $opts['limit'],  PDO::PARAM_INT);
         }
-        if (isset($opts['start_date'])) {
-            $tasks_query->bindParam(':start_date', $opts['start_date'],  PDO::PARAM_STR);
-        }
-        if (isset($opts['end_date'])) {
+
+        if (isset($opts['for_calendar'])) {
             $tasks_query->bindParam(':end_date', $opts['end_date'],  PDO::PARAM_STR);
+            $tasks_query->bindParam(':start_date', $opts['start_date'],  PDO::PARAM_STR);
+        } else {
+            if (isset($opts['start_date'])) {
+                $tasks_query->bindParam(':start_date', $opts['start_date'],  PDO::PARAM_STR);
+            }
+            if (isset($opts['end_date'])) {
+                $tasks_query->bindParam(':end_date', $opts['end_date'],  PDO::PARAM_STR);
+            }
         }
 
 
@@ -109,6 +127,7 @@ function get_tasks($opts) {
         $tasks_query->setFetchMode(PDO::FETCH_OBJ);
         $tasks_query->execute();
         $tasks_count = $tasks_query->rowCount();
+
 
         if ($tasks_count > 0) {
             $tasks =  $tasks_query->fetchAll();
