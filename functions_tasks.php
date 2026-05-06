@@ -514,7 +514,8 @@ function update_task($task_id, $task) {
             `updated_at` = :updated_at,
             `completed_at` = :completed_at ,
             `time_taken` = :time_taken ,
-            `task_code` = :task_code 
+            `task_code` = :task_code ,
+            `deadline_at` = :deadline_at 
             WHERE id = :id";
 
             $task_query = $conn->prepare($query);
@@ -533,6 +534,7 @@ function update_task($task_id, $task) {
             $task_query->bindParam(':completed_at', $task->completed_at);
             $task_query->bindParam(':time_taken', $task->time_taken);
             $task_query->bindParam(':task_code', $task->task_code);
+            $task_query->bindParam(':deadline_at', $task->deadline_at);
             $task_query->bindParam(':id', $task_id);
             $task_query->execute();
             unset($conn);
@@ -560,6 +562,10 @@ function update_task_field($task_id, $field, $data) {
             } else if ($field == 'time_taken') {
                 if ($data == null) {
                     $data = 0;
+                }
+            } else if ($field == 'deadline_at') {
+                if ($data == '') {
+                    $data = null;
                 }
             }
 
@@ -645,6 +651,13 @@ function processTask($task) {
     $task->project_id =  intval($task->project_id);
     $task->assignee_id =  intval($task->assignee_id);
     $task->uploads_count =  intval($task->uploads_count);
+    if (property_exists($task, 'deadline_at')) {
+
+        if ($task->deadline_at) {
+            $deadlinetime = strtotime($task->deadline_at);
+            $task->deadline_at =  date('Y-m-d', $deadlinetime);
+        }
+    }
 
 
     if (property_exists($task, 'comments')) {
