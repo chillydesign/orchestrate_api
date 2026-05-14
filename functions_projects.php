@@ -482,6 +482,7 @@ function show_project_as_csv($json, $show_header = true) {
         "Completed at",
         "Created at",
         "Updated at",
+        "Deadline",
         "Comments",
     );
 
@@ -512,6 +513,7 @@ function show_project_as_csv($json, $show_header = true) {
             $task->completed_at,
             $task->created_at,
             $task->updated_at,
+            $task->deadline_at,
             comments_as_string($task->comments),
         ];
         array_push($csv_array,   implode(',', $csv_row));
